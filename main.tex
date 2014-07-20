@@ -102,7 +102,7 @@ Les thématiques étudiées à l'IJPB sont très variées. Elles sont regroupés
 
 J'ai réalisé mon stage au sein de l'équipe Bioinformatique et Informatique. 
 
-%demander à Delphine et co qu'est-ce qui constitue leur pain quotidien ?
+%il manque des choses ici
 
 \section{Introduction}
 
@@ -234,15 +234,11 @@ Il nous permettra :
 
 \item d'évaluer la couverture pour chaque génome et chaque accession, ce qui est essentiel pour l'assemblage
 
-%\item de repérer et quantifier les réarrangements entre nos librairies et la référence 
-
 \end{itemize}
 
 Pour l'alignement, on utilise l'outil bwa. On autorise 2 événements indépendants seulement (par exemple, un mismatch plus un micro-indel). Ce critère stringent est adapté au génome mitochondrial, où il y a très peu de mutations ponctuelles.
 
 Les alignements obtenus sont au format SAM, où chaque read correspond à une ligne. Si un read s'aligne à plusieurs endroits du génome, un seul alignement est choisi au hasard. Cela nous contraint à masquer le chromosome 2 de la référence. En effet,  la quasi-totalité de la mitochondrie est insérée à l'intérieur de ce chromosome.\cite{chr2} Donc, si nous ne le masquions pas, les reads mitochondriaux auraient un best hit sur la mitochondrie et un best hit sur le chromosome 2 et la moitié d'entre eux environ seraient assigné au noyau. L'estimation de la couverture mitochondriale serait alors complètement faussée. 
-
-%On choisit de reporter les alignements alternatifs dans le tag XA pour tous les reads qui ont 10 best hits au plus. Ces positions alternatives nous permettront de prendre en compte d'éventuels transferts de gènes entre génomes. 
 
 \subsection{Réduction des jeux de données}
 
@@ -258,21 +254,13 @@ Par exemple, pour Cvi-0, les couvertures des génomes mitochondrial et chloropla
 
 Nous ne connaissons pas \textit{à priori} quelles couvertures des génomes mt et ct vous nous donner les meilleurs résultats. Nous sommes donc obligés de tester plusieurs valeurs, en gardant toutefois en tête que des couvertures très élevées (supérieures à 1000X) ont peu de chances de founir de bons assemblages.\\
 
-%Ensuite, le filtrage. On utilise les alignements réalisés précédemment. Comme on veut en priorité assembler la mitochondrie, on écarte tous les reads qui ont un best hit unique sur le noyau ou le chloroplaste.
-
 Deuxièmement, la normalisation digitale. Cette procédure utilise la distribution de l'abondance des k-mers pour estimer la couverture par read et éliminer les reads dont la couverture dépasse la limite imposée.\cite{brown2012reference} Elle présente l'avantage, outre de réduire la taille du jeu de données, d'homogéiniser les couvertures des deux génomes.
-
-%La normalisation digitale est une technique qui utilise la distribution de l'abondance des k-mers pour estimer la couverture par read et éliminer les reads dont la couverture dépasse la limite imposée.\cite{brown2012reference} Elle présente l'avantage, outre de réduire la taille du jeu de données, d'homogéiniser les couvertures des deux génomes.
 
 On va normaliser les données avec khmer. Ce programme propose également un outil de filtration des données. Il permet de supprimer les reads contenant des k-mers d'abondance inférieure à la limite choisie. Ces k-mers de faible abondance correspondent à des erreurs de séquençage et, dans notre cas, à de la contamination nucléaire. On va donc appliquer une filtration après normalisation pour essayer de supprimer tous les reads correspondant au noyau. 
 
 Les seuils de normalisation et de filtration ne sont pas connus au préalable. On est obligé de procéder par tâtonnements en testant plusieurs valeurs des paramètres. On vérifie que les jeux de données obtenus sont valides, c'est-à-dire que la couverture a bien été réduite et homogénéisée et que les données supprimées étaient bien redondantes.\\ 
 
 Nous avons pour chaque accession plusieurs jeux de donnée réduits selon  différentes méthodes et différents paramètres. Nous devons les assembler afin de comparer la qualité des résultats obtenus pour chaque jeu de donnée. 
-
-%Nous avons testé deux outils de normalisation digitale, la suite khmer et le script Perl intégré à l'assembleur Trinity.
-
-%Pour comparer l'efficacité des différentes procédures, on aligne les jeux de données réduits contre la référence et on estime à nouveau les couvertures. Nous pouvons envisager d'assembler les jeux de données suffisamment réduits.
 
 \subsection{Assemblage}
 
@@ -318,6 +306,8 @@ On commence par créer des liens entre les contigs (clk) puis on rassemble ces l
 
 Les deux étapes qui proposent des options intéressantes sont MarkRepeats et OrientContigs. 
 
+%il manque des choses ici
+
 \subsubsection{Choix des paramètres pour SGA}
 
 SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph et créent les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans}. 
@@ -356,9 +346,6 @@ La figure \ref{temoinchloro} met en évidence qu'une portion du chloroplaste de 
 \caption{Structure du génome chloroplastique chez \textit{Arabidopsis Thaliana}, toutes accessions confondues}
 \label{schemachloro}
 \end{figure}
-
-%La figure \ref{schemachloro} représente les 3 régions du chloroplaste, les deux régions uniques en rouge et en vert et la région répétée en bleu. Les arcs de cercle noirs symbolisent les jonctions entre ces régions. ``
-
 
 \textbf{Après contigage}, on aligne nos contigs contre le chloroplaste de référence à l'aide de Nucmer.  On doit obtenir :
 \begin{itemize}
@@ -456,13 +443,6 @@ D'autres correspondent à des régions où la variabilité entre l'accession ét
 
 Enfin, les autres reads non mappés ont une faible complexité et correspondent probablement à des régions répétées. \\
 
-%Nous avons tenté de déterminer la nature des reads non mappés pour Cvi-0 en effectuant des BLASTs mais l'alignement local était beaucoup trop lent. Nous avons donc essayé l'approche inverse en constituant une banque de séquence avec les reads non mappés et en blastant le génome entier d'\textit{Arabidopsis Thaliana} contre cette banque. Des séquences d'\textit{Arabidopsis} ne se sont alignées que sur 10 000 des 60 000 séquences de la banque. Nous avons donc regardé la composition en base....
-
-%\textit{après analyse des reads non mappés, on trouve qu'ils comportent beaucoup de SNP (plus de 7SNP par 50 base). Ce sont des régions génomiques qui diffèrent entre les accessions et des microsats }
-
-%pour de nombreuses séquences, la distance avec la référence est plus elevé que celles autorisées
-%d'autres séquences sont très répétées
-
 A partir du nombre de reads mappés sur chaque génome, on peut avoir une estimation de la couverture par une formule très simple : 
 
 couverture $\approx$ nombre de reads mappés X taille des reads / taille du génome
@@ -529,19 +509,6 @@ Kz-9 & 4 &\\
 \subsection{Réduction des jeux de données}
 \hspace{1cm}\textbf{Exemple pour Cvi-0 normalisé à 30X}\\
 
-\begin{comment}
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.5]{Assemblage/couvavantapres.pdf}
-\label{norm}
-\caption{La couverture le long de la mitochondrie de référence pour Cvi-0 avant et après normalisation à 30X avec khmer}
-\end{figure}
-
-On a aligné le jeux de données à la référence (sans chromosome 2) avant et après normalisation. Avant normalisation, on constate que la couverture le long de la mitochondrie varie entre 30 et 90X. Les pics vers le bas correspondent à des régions de la mitochondrie présentes également sur le noyau. Les reads correspondant à ces régions sont majoritairement mitochondriaux mais vont se répartir aléatoirement entre le noyau et la mitochondrie (choix aléatoire d'un best hit parmi plusieurs lors de l'alignement), ce qui diminue artificiellement la couverture de la mitochondrie à ces endroits et gonfle celle du noyau. C'est pour cette raison qu'on a masqué le chromosome 2 de la référence pour cette alignement. Ce chromosome présente de très grandes nombreuses insertions mitochondriales et déstabilise complètement la couverture le long de la mitochondrie si on ne le masque pas. 
-
-Après normalisation, la couverture le long de la mitochondrie varie beaucoup moins. Elle est centrée autour de 40X. On constate l'apparence de nouveaux pics vers le bas. Ils correspondraient à des régions de la mitochondrie commune avec le chloroplaste. Les k-mer communs à la mitochondrie et au chloroplaste ont vus leur abondance réduite par khmer à 40X en tout ; ils recouvrent donc en moyenne 20X la mitochondrie et 20X le chloroplaste d'où les chutes ponctuelles de couverture.  \\
-\end{comment}
-
 La figure \ref{normfilt:1} illustre l'effet de la normalisation sans filtration. On vérifie que la normalisation ramène bien le chloroplaste et la mitochondrie a un même niveau de couverture. 
 
 La figure \ref{normfilt:2} met en évidence l'effet de différents niveaux de filtration. Nous avions commencé avec un seuil de filtration de 3X afin d'éliminer le noyau, dont la couverture est de 1.3X environ pour Cvi-0. Cependant, après assemblage de notre jeu de données normalisé et filtré, la plupart des contigs obtenus étaient faiblement couverts et s'alignaient sur le noyau. Un seuil de filtration faible est donc insuffisant pour éliminer la majorité des reads du noyau. 
@@ -565,41 +532,6 @@ Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtratio
 \label{normfilt}
 \caption{Histogrammes des abondances des 25-mers pour Cvi-0. On représente le nombre y de 25-mers qui apparaissent x fois dans le jeu de données.}
 \end{figure}
-
-
-\begin{comment}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|cc||cc||cc|}
-  \hline
- & \multicolumn{2}{c||}{Avant} & \multicolumn{2}{c||}{Normalisation avec khmer} & \multicolumn{2}{c|}{Normalisation avec Trinity} \\
- \hline
- & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie \\ 
-  \hline
-Cvi-0 & 545.38 & 35.48 & 60.69 & 36.20 & 46.29 & 32.66 \\
-Sha & 2661.22 & 1198.36 & 71.92 & 48.90 & 51.87 & 35.82 \\
-   \hline
-\end{tabular}
-\caption{Les couvertures par accessions avant et après normalisation}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|cc||cc||cc|}
-  \hline
- & \multicolumn{2}{c||}{Avant} & \multicolumn{2}{c||}{Après ré-échantillonage} & \multicolumn{2}{c|}{Après filtration} \\
- \hline
- & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie \\ 
-  \hline
-Cvi-0 & 545.38 & 35.48 & 191.78 & 13.38 & 185.20 & 21.58 \\
-Sha & 2661.22 & 1198.36 & 285.48 & 133.46 & 995.49 & 747.82 \\ 
-   \hline
-\end{tabular}
-\caption{Les couvertures par accessions avant et après réduction des données par filtrage ou ré-échantillonage}
-\end{table}
-
-\end{comment}
 
 \subsection{Assemblage}
 
