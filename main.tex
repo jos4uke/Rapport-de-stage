@@ -1,0 +1,810 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{here}
+\usepackage{comment}
+\usepackage{subfig}
+\usepackage[format=plain,labelfont=sc]{caption}
+\usepackage{array,multirow,makecell}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancypagestyle{plain}{
+\fancyhf{}
+  \lfoot{\includegraphics[width=0.2\textwidth]{Titre/insa-couleur.png}} 
+  \cfoot{\includegraphics[width=0.2\textwidth]{Titre/logo.jpg}}
+  \rfoot{\includegraphics[width=0.2\textwidth]{Titre/logo2.png}}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\makeatletter
+\newcommand*{\centerfloat}{%
+  \parindent \z@
+  \leftskip \z@ \@plus 1fil \@minus \textwidth
+  \rightskip\leftskip
+  \parfillskip \z@skip}
+\makeatother
+
+\title{Rapport de stage}
+
+\begin{document}
+
+\begin{titlepage}
+
+\begin{center}
+
+\thispagestyle{plain}
+
+{ \Huge \textsc{Rapport de stage}\  \\[0.4cm] }
+\HRule \\[0.4cm]
+{ \Large Assemblage \textit{de novo} des génomes mitochondriaux et chloroplastiques de 10 accessions naturelles d'\textit{Arabidopsis thaliana}  \\[0.4cm] }
+\HRule \\[0.4cm]
+
+\vspace{1.5cm}
+
+% Author and supervisor
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Auteur}\\
+Myriam \textsc{Shafie}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Tuteur} \\
+Fabienne \textsc{Granier}
+\end{flushright}
+\end{minipage}
+
+\vspace{3cm}
+
+\includegraphics[scale=0.2]{Titre/a_thaliana.jpg}
+
+\vspace{3cm}
+
+Equipe Bioinformatique et Informatique \\[0.2cm]
+Institut Jean-Pierre Bourgin \\[0.2cm]
+INRA Centre de Versailles-Grignon
+
+
+\end{center}
+
+\end{titlepage}
+
+\section*{Remerciements}
+
+\newpage
+
+\renewcommand{\contentsname}{Table des matières} 
+
+\tableofcontents
+
+\newpage
+
+\section{Présentation de l'organisme d'accueil}
+
+L'Institut Jean-Pierre Bourgin est une unité mixte de recherche INRA-AgroParisTech consacrée à l'étude de la biologie végétale. Il comporte environ 350 personnes, réparties en 25 équipes.
+
+Les thématiques étudiées à l'IJPB sont très variées. Elles sont regroupés en 5 grands pôles : 
+\begin{itemize}
+\item Morphogenèse, Signalisation, Modélisation 
+\item Dynamique et expression des génomes 
+\item Adaptation des plantes à leur environnement 
+\item Reproduction et Graines 
+\item Paroi végétale, fonction et usage
+\end{itemize}
+
+J'ai réalisé mon stage au sein de l'équipe Bioinformatique et Informatique. 
+
+%demander à Delphine et co qu'est-ce qui constitue leur pain quotidien ?
+
+\section{Introduction}
+
+\subsection{Mise en situation biologique}
+
+Les plantes vertes possèdent trois compartiments génétiques : le noyau, la mitochondrie (mt) et le chloroplaste (ct). La mitochondrie et le chloroplaste étaient à l'origine des bactéries endosymbiotes ; elles ont été intégrées à la cellule végétale lors de l'évolution et sont devenus des organites cellulaires. Au cours de cette intégration, une grande partie des génomes mt et ct a été transféré vers le noyau. 
+
+Cependant, la mitochondrie et le chloroplaste conservent un petit nombre de gènes cruciaux à leur fonctionnement. Ces gènes ne se suffisent bien évidemment pas à eux-mêmes. Les produits codés par le noyau et par les organites doivent absolument interagir entre eux pour que la mitochondrie et le chloroplaste fonctionnement correctement. 
+
+Ainsi, une co-évolution du génome nucléaire et cytoplasmique paraît obligatoire, car un changement dans l'un doit forcément être refléter par un changement dans l'autre afin de perpétuer leur interaction. Ce mécanisme fait que les génomes du noyau et des organites vont s'adapter à l'environnement de manière coopérative.
+
+La figure \ref{coadaptation} illustre ce principe. Il présente trois étapes de l'histoire évolutive d'une plante. Initialement, la plante possède l'allèle ancestrale N0 pour un gène du noyau et l'allèle ancestrale C0 pour un gène d'un des organites. Les produits de ces deux gènes interagissent correctement au niveau physiologique. Cet interaction contribue à la fitness globale de la plante et à son phénotype.
+
+Le gène cytoplasmique subit alors une mutation. La plante possède l'allèle dérivée C1 pour le gène cytoplasmique mais toujours l'allèle ancestrale N0 pour le gène nucléaire. L'interaction des produits des deux gènes est toujours possible mais elle est un peu moins efficace au niveau physiologique. Cependant, la fitness globale de la plante n'est pas diminuée, par exemple parce que la mutation C1 permet à la plante de s'adapter à un changement dans son environnement. La mutation C1 va donc être fixée. 
+
+Enfin, une mutation N1 du gène nucléaire va être positivement sélectionnée. En effet, cette mutation permet de restaurer une interaction optimale entre les produits des gènes nucléaire et cytoplasmique au niveau physiologique. Les gènes nucléaire et cytoplasmique ont donc évolués main dans la main pour assurer l'adaptation de la plante à son nouvel environnement. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{Introduction/coadaptation.PNG}
+\caption{La coadaptation nucléo-cytoplasmique \cite{marechal2012mitochondrial}}
+\label{coadaptation}
+\end{figure}
+
+Le meilleur moyen de mettre en évidence expérimentalement la coadaptation nucléo-cytoplasmique est de la briser.
+
+Considérons deux plantes d'une même espèce (donc interfertiles) mais appartenant à deux sous-espèces différentes ayant divergées depuis longtemps (par exemple, une plante poussant en France et une autre aux Etats-Unis). Le cytoplasme et le noyau de ces deux plantes ne sont pas compatibles. 
+
+On peut obtenir par croisements une plante qui possède le génome nucléaire de l'une et le génome cytoplasmique de l'autre. On mesure ensuite les caractéristiques phénotypiques qui nous intéressent chez la plante et ses parents. On peut ainsi repérer et quantifier l'influence de la coadaptation nucléo-cytoplasmique sur ces traits. 
+
+\subsection{Le projet CytoPhéno}
+
+Le projet CytoPhéno (signifiant \textit{Co-adaptation nucléo-cytoplasmique et phénotypes adaptatifs des plantes}) a été mis en place en 2012. Il est piloté par Françoise Budar, directrice de l'équipe Organites et Reproduction de l'IJPB, mais il implique également de nombreuses autres partenaires de l'INRA et du CNRS. 
+
+Ce projet possède deux volets de recherche, bien évidemment liés : la co-adapatation nucléo-cytoplasmique et le rôle du cytoplasme dans l'adaptation de la plante à son environnement. 
+
+La plante choisie pour l'étude de ces thèmes est \textit{Arabidopsis Thaliana}. En effet, outre tous les avantages qui font d'\textit{Arabidopsis} un organisme modèle (petit génome, cycle de vie rapide etc.), cette plante possède une forte diversité génétique et est présente naturellement dans un très grand nombre d'habitats naturels, ce qui en fait une référence pour les études portant sur l'adaptation. De plus, les chercheurs de l'IJBP ont mis en évidence en 2010 l'existence de la co-adaptation nucléo-cytoplasmique chez \textit{Arabidopsis Thaliana}.\cite{moison2010cytoplasmic}
+
+Ils ont choisi de concentrer leur étude sur la plus petite core collection (n=8) disponible au \textit{Versailles Arabidopsis Stock Center}. Une core collection est un petit groupe d'accessions naturelles d'\textit{Arabidopsis Thaliana} qui capture au mieux la diversité génétique et morphologique de l'espèce.\cite{mckhann2004nested}
+
+A partir de ces 8 accessions naturelles, les chercheurs ont crée 56 cytolignées, représentant toutes les combinaisons noyau/cytoplasme possibles. 
+
+Le projet CytoPhéno comporte différentes étapes.
+
+\begin{enumerate}
+\item l'étude des variantes génétiques mitochondrial et chloroplastique pour les 8 accessions naturelles
+\item la production d'un grand nombre de graines pour les accessions naturelles et les cytolignées
+\item l'identification des gènes nucléaires et cytoplasmiques impliqués dans la co-adaptation  
+\item le phénotypage de la core collection et des cytolignées pour différents traits (germination, réponse à différents niveaux de nitrogène etc.)
+\item l'analyse statistique des résultats afin d'évaluer l'effet sur le phénotype du noyau, du cytoplasme et de l'interaction nucléo-cytoplasmique
+\end{enumerate}
+
+Suite à ces tâches, nous pourrons répondre aux questions suivantes :  
+
+Quels phénotypes sont impactés quand la co-adaptation nucléo-cytoplasmique est rompue ? Et quels gènes sont impliqués ?
+
+Quels traits potentiellement adaptatifs sont modifiés par des variations du génome cytoplasmique ? A quel point ces traits sont également impactés par la co-adaptation nucléo-cytoplasmique ?  
+
+\subsection{La tâche 1 : Analyse bioinformatique}
+
+Lors de mon stage, j'ai travaillé sur la première tâche du projet CytoPhéno : l'analyse des génomes mitochondriaux et chloroplastique des 8 accessions naturelles.
+
+Le but de cet tâche est de trouver des polymorphismes non neutres entre les différentes accessions. En effet, les gènes présents dans des versions significativement différentes selon les accessions sont peut-être impliqués dans la rupture de la coadaptation nucléo-cytoplasmique. 
+
+Pour trouver ces variants, il va falloir aligner ou assembler les génomes mitochondriaux et chloroplastiques des 8 accessions puis les annoter. 
+
+Les mitochondries des plantes évoluent peu par mutations ponctuelles et beaucoup par réarrangements. Des pans entiers de génomes vont donc être réordonnées entre nos 8 accessions naturelles et la référence dont nous disposons (génome mitochondrial de l'accession C24). On privilégie donc l'assemblage \textit{de novo} par rapport à l'alignement pour la mitochondrie.
+
+Le chloroplaste présente lui beaucoup de SNPs et peu de réarrangements. On pourrait donc l'aligner à une référence. Cependant, les données dont nous disposons contiennent à la fois les génomes mt et ct. Séparer les deux génomes est difficile car il y a des insertions du génome chloroplastique dans la mitochondrie et vice-versa. Les bioinformaticiens de l'IJPB ont donc optés pour un assemblage \textit{de novo} simultané des génomes mt et ct.
+
+
+\section{Matériels et méthodes}
+
+\subsection{Les données brutes}
+
+Nous disposons de 10 librairies de reads correspondant chacune à une accession. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+   Nom & Habitat \\
+   \hline
+   Jea & St-Jean Cap Ferrat [France] \\
+   Ita-0 & Ibel Tazekka (Jebel Tazekka) [Maroc] \\
+   Cvi-0 & Cap-Vert [Cap-Vert] \\
+   Bur-0 & Burren [Irlande] \\
+   Blh-1 & Bulhary [République Tchèque] \\
+   Oy-0 & Oystese [Norvège] \\
+   Sha(hdara) & Shakdara River (Pamir) [Tadjikistan] \\
+   Ct-1 & Catane [Italie] \\
+   Mr-0* & Monterosso [Italie] \\
+   Kz-9* & Atasu [Kazakhstan] \\
+   \hline
+\end{tabular}
+\label{donnees}
+\caption{Présentation des 10 accessions étudiées (* : ne fait pas partie de la core collection)}
+\end{table}
+
+Outre les 8 membres de la core-collection, nous avons également étudié les génomes des accessions Mr-0 et Kz-9 d'\textit{Arabidopsis Thaliana}. Ces deux accessions ont été ajoutées par Françoise Budar, la coordinatrice du projet, car elle présente un intérêt particulier pour son étude de la stérilité mâle cytoplasmique (recherche des gènes cytoplasmiques qui induisent la stérilité mâle chez certaines accessions d'\textit{Arabidopsis Thaliana}). 
+
+Les génomes mitochondriaux et chloroplastiques des 10 accessions ont été séquencés en paired-end, Sha et Kz-9 par la technologie Illumina HiSeq 2000 (2X100 bases) et toutes les autres accessions par la technologie Illumina MiSeq 2000 (2X150 bases). Nous avons donc, pour chaque accession, deux fichiers fastq contenant les reads pairés. 
+
+\subsection{Préparation des séquences}
+
+Avant d'aligner ou d'assembler ces reads, il est nécessaire d'effectuer une analyse de qualité. Elle nous permettra de détecter d'éventuelles contaminations de la librairie ou des problèmes de séquençage (par exemple, une mauvaise qualité d'imagerie sur une flowcell va donner un sous-ensemble de reads de mauvaise qualité).
+
+On effectue l'analyse de qualité avec fastqc. Cet outil possède plusieurs modules qui vont chacune évaluer un indicateur : la qualité des bases (selon leur position sur le read), la longueur des reads etc. Chacune des ces mesures est comparée à ce qui est attendu pour une librairie aléatoire. Si l'observé et le prédit sont proches, le module est validé.
+
+Si le module est rejeté, cela signifie que la librairie étudiée diffère sur ce point d'une librairie aléatoire. Cette différence peut provenir d'une contamination ou d'un biais de séquençage mais elle peut également résulter de la réalité biologique de nos données (qui ne sont, bien évidemment, pas aléatoires).
+
+Il est donc nécessaire de regarder non seulement le résultats des tests (module validé, non validé ou à la limite de validation) mais aussi la sortie graphique de chaque module. fastqc fournit une représentation graphique de chaque indicateur testé : boxplot des qualités de chaque base selon leur position dans le read, abondance des reads en fonction de leur longueur etc. 
+
+Si les indicateurs sont normaux pour notre librairie, on peut procéder au nettoyage des reads. Pour cela, on utilise l'outil Trimmomatic.
+
+Trimmomatic va supprimer aux extrémités 3' et 5' les bases dont la qualité est inférieure à 20 (ce qui signifie que la base a une chance sur cent d'avoir été mal identifiée). Puis, il fait glisser une fenêtre de 4 nucléotides sur la séquence : si la qualité moyenne de la fenêtre est inférieure à 15, elle est supprimée. Les reads devenus trop courts (moins de 50 bases) sont ensuite jetés.
+
+Après trimming, on refait une analyse de qualité sur les reads retenus pour vérifier que le nettoyage a bien amélioré la qualité de la librairie.
+
+\subsection{Alignement}
+
+Avant d'effectuer l'assemblage \textit{de novo} de nos libraries nettoyées, on va d'abord les aligner à une référence : génome nucléaire et chloroplastique de l'accession Col-0 et génome mitochondrial de C24. 
+
+Pourquoi cet alignement ? 
+
+Il nous permettra : 
+\begin{itemize}
+\item de quantifier le degré de contamination nucléaire de notre librairie
+
+\item d'évaluer la couverture pour chaque génome et chaque accession, ce qui est essentiel pour l'assemblage
+
+%\item de repérer et quantifier les réarrangements entre nos librairies et la référence 
+
+\end{itemize}
+
+Pour l'alignement, on utilise l'outil bwa. On autorise 2 événements indépendants seulement (par exemple, un mismatch plus un micro-indel). Ce critère stringent est adapté au génome mitochondrial, où il y a très peu de mutations ponctuelles.
+
+Les alignements obtenus sont au format SAM, où chaque read correspond à une ligne. Si un read s'aligne à plusieurs endroits du génome, un seul alignement est choisi au hasard. Cela nous contraint à masquer le chromosome 2 de la référence. En effet,  la quasi-totalité de la mitochondrie est insérée à l'intérieur de ce chromosome.\cite{chr2} Donc, si nous ne le masquions pas, les reads mitochondriaux auraient un best hit sur la mitochondrie et un best hit sur le chromosome 2 et la moitié d'entre eux environ seraient assigné au noyau. L'estimation de la couverture mitochondriale serait alors complètement faussée. 
+
+%On choisit de reporter les alignements alternatifs dans le tag XA pour tous les reads qui ont 10 best hits au plus. Ces positions alternatives nous permettront de prendre en compte d'éventuels transferts de gènes entre génomes. 
+
+\subsection{Réduction des jeux de données}
+
+En une fois, on ne séquence par shotgun qu'une fraction aléatoire du génome. Pour être sur que nos reads couvrent 90\% et plus du génome, il est nécessaire d'échantilloner le génome un très grand nombre de fois. Certaines régions se retrouveront dans de nombreux échantillons et auront donc une forte couverture. D'autres se retrouveront dans peu d'échantillons et seront peu couvertes. Une minorité de reads seront donc cruciaux et une majorité de reads complètement redondants. 
+
+Cette grande quantité de reads inutiles va poser des problèmes à l'assemblage. Le temps et la mémoire nécessaire pour les traiter sont non négligeables. De plus, ces reads contiennent des erreurs de séquençage. Si on les éliminait, la qualité de l'assemblage serait améliorée, particulièrement pour les assembleurs utilisant des graphes de Bruijn, que les noeuds et les arrêtes erronés peuvent rapidement envahir quand les jeux de données sont trop gros.
+
+On va tester deux approches pour réduire le jeu de données. \\
+
+Premièrement, le ré-échantillonage. Il consiste simplement à tirer aléatoirement un échantillon dans la librairie. On choisit la taille de l'échantillon en fonction des couvertures mitochondrial et chloroplastique qu'on souhaite obtenir.
+
+Par exemple, pour Cvi-0, les couvertures des génomes mitochondrial et chloroplastique ont été estimées par alignement à 60X et 560X pour le jeu de donnée brut. En ne conservant en moyenne qu'un read sur trois, nous devrions obtenir une couverture de 20X sur la mitochondrie et de 190X sur le chloroplaste. 
+
+Nous ne connaissons pas \textit{à priori} quelles couvertures des génomes mt et ct vous nous donner les meilleurs résultats. Nous sommes donc obligés de tester plusieurs valeurs, en gardant toutefois en tête que des couvertures très élevées (supérieures à 1000X) ont peu de chances de founir de bons assemblages.\\
+
+%Ensuite, le filtrage. On utilise les alignements réalisés précédemment. Comme on veut en priorité assembler la mitochondrie, on écarte tous les reads qui ont un best hit unique sur le noyau ou le chloroplaste.
+
+Deuxièmement, la normalisation digitale. Cette procédure utilise la distribution de l'abondance des k-mers pour estimer la couverture par read et éliminer les reads dont la couverture dépasse la limite imposée.\cite{brown2012reference} Elle présente l'avantage, outre de réduire la taille du jeu de données, d'homogéiniser les couvertures des deux génomes.
+
+%La normalisation digitale est une technique qui utilise la distribution de l'abondance des k-mers pour estimer la couverture par read et éliminer les reads dont la couverture dépasse la limite imposée.\cite{brown2012reference} Elle présente l'avantage, outre de réduire la taille du jeu de données, d'homogéiniser les couvertures des deux génomes.
+
+On va normaliser les données avec khmer. Ce programme propose également un outil de filtration des données. Il permet de supprimer les reads contenant des k-mers d'abondance inférieure à la limite choisie. Ces k-mers de faible abondance correspondent à des erreurs de séquençage et, dans notre cas, à de la contamination nucléaire. On va donc appliquer une filtration après normalisation pour essayer de supprimer tous les reads correspondant au noyau. 
+
+Les seuils de normalisation et de filtration ne sont pas connus au préalable. On est obligé de procéder par tâtonnements en testant plusieurs valeurs des paramètres. On vérifie que les jeux de données obtenus sont valides, c'est-à-dire que la couverture a bien été réduite et homogénéisée et que les données supprimées étaient bien redondantes.\\ 
+
+Nous avons pour chaque accession plusieurs jeux de donnée réduits selon  différentes méthodes et différents paramètres. Nous devons les assembler afin de comparer la qualité des résultats obtenus pour chaque jeu de donnée. 
+
+%Nous avons testé deux outils de normalisation digitale, la suite khmer et le script Perl intégré à l'assembleur Trinity.
+
+%Pour comparer l'efficacité des différentes procédures, on aligne les jeux de données réduits contre la référence et on estime à nouveau les couvertures. Nous pouvons envisager d'assembler les jeux de données suffisamment réduits.
+
+\subsection{Assemblage}
+
+\subsubsection{Choix d'une stratégie d'assemblage}
+
+Le premier problème auquel nous allons être confrontés est que nous n'assemblons pas un seul génome mais deux simultanément. Deux solutions s'offrent à nous : 
+\begin{itemize}
+\item utiliser un assembleur classique.
+
+Cette option n'est valable que les jeux de données pour lesquels les couvertures des génomes mitochondrial et chloroplastique sont les mêmes (jeux de données normalisés). 
+
+\item utiliser un assembleur de métagénome.
+
+L'assembleur métagénomique va utiliser les différences de couverture pour distinguer 1) la mitochondrie du chloroplaste 2) les régions répétées des régions non répétées. On ne peut donc pas utiliser de jeux de données normalisé, pour lesquels la couverture a été rabotée en dessous d'une certaine limite. Pour cette approche, on ne se servira que de jeu de donnée ré-échantillonné, où les différentes couvertures ont été réduites tout en maintenant leur stoechiométrie.  
+
+\end{itemize}
+
+Pour l'assemblage classique, nous avons utilisé Velvet et SGA. En effet, ces deux assembleurs sont basés sur des principes différents : les graphes de Bruijn pour Velvet et l'Overlap Consensus Layout pour SGA. SGA identifie toutes les paires de reads qui se recouvrent et construit un graphe avec un noeud pour chaque read et une arrête pour chaque paire de reads qui se recouvre. Le graphe est ensuite simplifiée (on retire les arrêtes redondantes) et stocké efficacement grâce à la transformée de Burrows-Wheeler. \cite{simpson2012efficient}
+
+Notre assembleur de métagénome sera MetaVelvet. 
+
+A noter que Velvet et MetaVelvet n'ont assuré que la partie contiguage de l'assemblage. La partie scaffolding a été effectuée par Bambus2. Pour SGA, nous avons utilisé son scaffolder intégré (sga scaffold). 
+
+\subsubsection{Choix des paramètres pour Velvet et MetaVelvet}
+
+L'un des paramètres les plus importants pour un assemblage par graphe de Bruijn est la taille de k-mer utilisé pour construire le graphe. 
+
+Nous avons construit notre propre script pour lancer Velvet avec de multiples valeurs de k. Les deux options les plus importantes, outre la taille du k-mer, sont  \textit{exp\_cov} et \textit{cov\_cutoff}. 
+
+\textit{exp\_cov} permet d'indiquer à Velvet la couverture attendue pour une région unique du génome. On aligne le jeu de données normalisé à la référence et on estime à nouveau les couvertures du chloroplaste et de la mitochondrie. On doit obtenir une valeur unique qu'on fournit à \textit{exp\_cov}. 
+
+Les noeuds dont la couverture sont inférieure à \textit{cov\_cutoff} sont retirés du graphe de Bruijn après sa construction. Cette option permet donc d'éliminer toute trace de contamination nucléaire qui aurait échappé au filtrage.  
+
+Pour MetaVelvet, nous avons procédé exactement de la même façon. La seule différence est que l'option \textit{exp\_cov} est remplacée par \textit{exp\_covs}. On fournit à MetaVelvet les deux pics de couvertures qui correspondent à la mitochondrie et au chloroplaste.
+
+La qualité des assemblages réalisés avec différents k est ensuite comparée à l'aide de Quast. Quast est un script Python qui va calculer les statistiques de chaque assemblage (N50, taille du plus grand contig etc.) et les présenter sous forme d'un rapport HTML pour une comparaison facile. On peut donc rapidement repérer la taille de k-mer qui semble produire le meilleur assemblage.
+
+\subsubsection{Choix des paramètres pour Bambus2}
+
+Bambus2 est une suite de scripts qui effectuent les différentes étapes du scaffolding. 
+
+On commence par créer des liens entre les contigs (clk) puis on rassemble ces liens entre une collection de bord possibles pour les contigs (Bundler). Bambus2 nous permet également de repérer les régions répétées du génome (MarkRepeats). On  utilise ces informations pour placer les contigs les uns par rapport aux autres et les orienter (OrientContigs). Les scaffolds obtenus sous forme de graphe sont ensuite linéarisés et enregistrés au format fasta.  
+
+Les deux étapes qui proposent des options intéressantes sont MarkRepeats et OrientContigs. 
+
+\subsubsection{Choix des paramètres pour SGA}
+
+SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph et créent les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans}. 
+
+Pour le scaffolding, on réaligne le jeu de données sur les contigs avec \textit{sga align} et on utilise le fichier BAM obtenu 1)
+pour avoir une liste des liens entre les contigs à l'aide du script Perl \textit{sga-bam2de} 2) pour calculer pour chaque contig la statistique de Myers avec le script Python \textit{sga-astat}. 
+
+Cette statistique sera utilisé par \textit{sga scaffold} pour déterminer quels contigs correspondent à des répétitions : tous les contigs qui ont une statistique de Myers inférieure à un certain seuil sont considérés comme étant répétés. Pour déterminer le bon seuil, on compare les valeurs de la statistique de Myers pour les contigs chloroplastiques uniques et répétées (voir la structure du chloroplaste figure \ref{schemachloro}). On passe également à \textit{sga scaffold} les options \textit{--strict --remove-conflicting} pour avoir les scaffolds les plus conservatifs possibles. 
+
+\textit{sga scaffold} donne pour chaque scaffold, la liste des contigs qui le constituent et comment ils sont placés les uns par rapport aux autres. \textit{sga scaffold2fasta} utilise ce fichier pour écrire la séquence des scaffolds au format fasta. On se place dans le mode résolution par graphe ; avec l'option \textit{-g best-any}, on tente de résoudre les gaps entre les contigs en parcourant le graphe et en trouvant le chemin qui correspond le mieux aux distances estimées entre les contigs. 
+
+\subsubsection{Evaluation de la qualité des assemblages obtenus}
+
+\vspace{0.2cm}
+
+Comment savoir si nos assemblages sont bons ou pas ? \\
+
+\textbf{Pour le chloroplaste, on sait exactement ce que l'on doit obtenir}. Le chloroplaste évolue non par réarrangements mais par mutations ponctuelles. Les chloroplastes des 10 accessions naturelles vont donc être très proches du chloroplaste de référence. \\
+
+Nous avons donc commencé par étudier la structure du chloroplaste de référence. 
+
+On aligne le chloroplaste de référence contre lui-même à l'aide de Nucmer. Nucmer est une pipeline de la suite MUMmer qui permet d'aligner extrêmement rapidement des génomes entiers contre une référence et de représenter ces alignements sous forme de graphe de ressemblance (dotplots).  
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3] {Assemblage/chloroVSchloro.png}
+\caption{Dotplot du chloroplaste de référence aligné contre lui-même}
+\label{temoinchloro}
+\end{figure}
+
+La figure \ref{temoinchloro} met en évidence qu'une portion du chloroplaste de référence comprise entre 85 et 110kb est répétée et inversée entre 128 et 154kb. On devrait retrouver la même inversion-répétition chez les chloroplastes des dix accessions naturelles. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8] {Assemblage/schemachloro.png}
+\caption{Structure du génome chloroplastique chez \textit{Arabidopsis Thaliana}, toutes accessions confondues}
+\label{schemachloro}
+\end{figure}
+
+%La figure \ref{schemachloro} représente les 3 régions du chloroplaste, les deux régions uniques en rouge et en vert et la région répétée en bleu. Les arcs de cercle noirs symbolisent les jonctions entre ces régions. ``
+
+
+\textbf{Après contigage}, on aligne nos contigs contre le chloroplaste de référence à l'aide de Nucmer.  On doit obtenir :
+\begin{itemize}
+\item un contig non chimérique qui mappe sur le chloroplaste de référence entre 0 et 85kb dans le sens direct (en rouge sur la figure \ref{schemachloro})
+\item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 85 et 110kb dans le sens direct et entre 128 et 154kb dans le sens inverse (en bleu sur la figure \ref{schemachloro})
+\item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 110 et 128kb dans le sens direct (en vert sur la figure \ref{schemachloro})
+\item les jonctions entre les 3 contigs (arcs de cercle noirs sur la figure \ref{schemachloro})
+\end{itemize}
+
+Le contiguer ne sait pas que la région représentée en bleue est une région répétée. Il voit seulement qu'à ses extrémités existe plusieurs possibilités. Par exemple, l'extrémité bleu foncé de la région répétée est reliée aux deux extremités de la région unique rouge. Le contiguer ne doit pas faire un choix et fusionner les contigs bleu et rouge dans un sens ou dans l'autre. Il doit les garder séparés. 
+
+Le scaffolder, en revanche, doit pouvoir détecter les régions répétées et résoudre les répétitions. 
+
+\textbf{Après scaffolding}, on doit donc avoir un unique scaffold non chimérique qui recouvre la totalité du chloroplaste de référence et présente la même inversion-répétition. 
+
+En alignant nos scaffolds contre le chloroplaste de référence avec Nucmer, on doit retrouver la figure \ref{temoinchloro}. \\
+
+\textbf{Pour la mitochondrie, on ne sait pas précisément ce qu'on doit obtenir.} En raison des nombreux réarrangements qu'elles ont subis, les mitochondries des 10 accessions naturelles vont être très différentes. \cite{arrieta2009diversity} Si on retrouve le même contig mitochondrial chez 9 accessions sur 10, cela ne signifie pas que l'assemblage de la dixième accession est mauvais. On peut néanmoins effectuer plusieurs tests afin de savoir si notre assemblage mitochondrial est plausible ou pas. 
+
+\begin{enumerate}
+\item Avec Nucmer, on aligne les contigs ou les scaffolds contre la mitochondrie de référence afin de savoir si notre assemblage couvre la totalité de la mitochondrie. 
+
+\item On aligne les données brutes sur les contigs ou les scaffolds et on regarde si les contigs mitochondriaux et chloroplastique ont la couverture attendue (consistence interne).
+
+\item On regarde si des paires s'alignent sur le même contig avec des tailles d'insert incohérentes. S'il y en a beaucoup, cela signifie que la structure interne du contig est mauvaise. On peut ainsi repérer et quantifier les mauvais contigs.
+
+Pour compter le nombre de "mauvaises" paires dans chaque contig, on utilise la librairie R ContigLink. 
+
+\end{enumerate}
+
+ContigLink prend en entrée l'alignement au format bam des données brutes sur les contigs. Il sépare les pairs qui s'alignent sur un seul et même contig et les pairs qui s'alignent sur deux contigs différents. Ces deux types de pairs vont être utilisés pour calculer deux estimations de la taille d'insert et de son écart-type. ContigLink donne ensuite une estimation de la qualité de l'assemblage. Cette estimation contient : 
+\begin{itemize}
+\item pour chaque contig, le nombre de pairs s'alignant sur ce contig avec une bonne taille d'insert et une mauvaise taille d'insert (éloignée de son estimation par plus de deux écarts-type)
+\item pour chaque pair de contigs, le nombre de "bonnes" et mauvaises" paires supportant un lien entre ces contigs.
+\end{itemize}
+
+Cette dernière information est très utile pour comprendre comment Bambus2 et sga scaffold vont relier les contigs entre eux pour former des scaffolds. 
+
+\section{Résultats}
+
+\subsection{Préparation des séquences}
+
+
+\begin{figure}[H]
+\centering
+
+\subfloat[Avant trimming]{
+   \includegraphics[scale=0.4] {Prep/QualitySha/avant1.png}
+   \label{quality:1}
+ }
+ 
+\subfloat[Après trimming]{
+   \includegraphics[scale=0.4] {Prep/QualitySha/apres1.png}
+   \label{quality:2}
+ }
+
+\label{quality}
+\caption{Qualité des bases en fonction de leur position sur les reads : exemple de Shahdara}
+\end{figure}
+
+La qualité de nos reads était excellente à la base : elle n'est donc que légèrement améliorée par le trimming. 
+
+La quasi-totalité des séquences ont conservé après trimming une taille proche de leur taille initiale  (autour de 100 bases pour Shahdara et Kz-9 et de 150 bases pour les autres accessions). 
+
+Le taux de duplication de nos libraries est considéré comme trop élevé par fastqc. Cependant, comme notre librarie contient contient des données mitochondriales, où les séquences répétées sont fréquentes, nous n'avons pas à nous alarmer de ce résultat. 
+
+\subsection{Alignement}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|cccc|}
+  \hline
+ & Chloroplaste & Mitochondrie & Noyau & Non aligné \\ 
+ \hline
+Blh-1 & 8.08 & 64.26 & 15.26 & 12.40 \\ 
+  Bur-0 & 16.16 & 9.78 & 42.79 & 31.26  \\ 
+  Ct-1 & 16.09 & 6.32 & 45.20 & 32.39  \\ 
+  Cvi-0 & 22.86 & 5.73 & 40.02 & 31.39  \\ 
+  Ita-0 & 14.70 & 43.72 & 21.48 & 20.09  \\ 
+  Jea & 12.83 & 21.90 & 38.84 & 26.43  \\ 
+  Kz-9 & 15.86 & 21.02 & 44.15 & 18.98  \\ 
+  Mr-0 & 8.04 & 66.05 & 13.07 & 12.84  \\ 
+  Oy-0 & 15.86 & 11.04 & 42.97 & 30.12 \\ 
+  Sha & 19.35 & 33.42 & 32.85 & 14.37 \\ 
+  \hline
+\end{tabular}
+\caption{Pourcentage de reads mappés et non mappés pour les 10 accessions (référence sans chromosome 2)}
+\end{table}
+
+Nous observons d'abord un pourcentage non négligeable de reads non mappés - jusqu'à 32\% pour l'accession Ct-1. 
+
+Certains reads non mappés appartiennent au chromosome 2 hors insertions mitochondriales. Comme le chromosome 2 est entièrement masqué, ils ne peuvent s'aligner nulle part. 
+
+D'autres correspondent à des régions où la variabilité entre l'accession étudiée et la référence dépasse le seuil fixé. On rappelle qu'avec les paramètres qu'on a fixé, pour qu'un read s'aligne à la référence, ils doivent être séparés par moins de deux événements indépendants. Or, on a trouvé dans certains reads non mappés jusqu'à 7 SNPs de différence par rapport à la référence. 
+
+Enfin, les autres reads non mappés ont une faible complexité et correspondent probablement à des régions répétées. \\
+
+%Nous avons tenté de déterminer la nature des reads non mappés pour Cvi-0 en effectuant des BLASTs mais l'alignement local était beaucoup trop lent. Nous avons donc essayé l'approche inverse en constituant une banque de séquence avec les reads non mappés et en blastant le génome entier d'\textit{Arabidopsis Thaliana} contre cette banque. Des séquences d'\textit{Arabidopsis} ne se sont alignées que sur 10 000 des 60 000 séquences de la banque. Nous avons donc regardé la composition en base....
+
+%\textit{après analyse des reads non mappés, on trouve qu'ils comportent beaucoup de SNP (plus de 7SNP par 50 base). Ce sont des régions génomiques qui diffèrent entre les accessions et des microsats }
+
+%pour de nombreuses séquences, la distance avec la référence est plus elevé que celles autorisées
+%d'autres séquences sont très répétées
+
+A partir du nombre de reads mappés sur chaque génome, on peut avoir une estimation de la couverture par une formule très simple : 
+
+couverture $\approx$ nombre de reads mappés X taille des reads / taille du génome
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|ccc|}
+  \hline
+ & Chloroplaste & Mitochondrie & Noyau \\ 
+  \hline
+Kz-9 & 2845.83 & 1587.55 & 10.60 \\ 
+  Sha & 2764.37 & 2010.17 & 6.28 \\ 
+  Blh-1 & 218.26 & 730.76 & 0.55 \\ 
+  Bur-0 & 466.26 & 118.79 & 1.65 \\ 
+  Ct-1 & 348.44 & 57.65 & 1.31 \\ 
+  Cvi-0 & 558.13 & 58.94 & 1.31 \\ 
+  Ita-0 & 396.71 & 496.72 & 0.78 \\ 
+  Jea & 326.96 & 235.05 & 1.33 \\ 
+  Mr-0 & 237.68 & 822.04 & 0.52 \\ 
+  Oy-0 & 458.24 & 134.26 & 1.66 \\ 
+   \hline
+\end{tabular}
+\caption{Les couvertures par accessions (référence sans chromosome 2)}
+\end{table}
+
+Pour toutes les accessions, la couverture du noyau est faible devant celles de la mitochondrie et du chloroplaste. Cependant, le génome nucléaire d'\textit{Arabidopsis Thaliana} est 300 fois plus grand que le génome mitochondrial et 1000 fois plus grand que le génome chloroplastique. En nombre de bases, la contamination nucléaire est donc non négligeable et nous devrons nous efforcer de l'éliminer du jeu de données avant l'assemblage. 
+
+Les couvertures mitochondriale et chloroplastique ne sont pas homogènes pour une même accession. Cela va nous poser problème car la taille de k-mer optimale pour l'assemblage par graphe de Bruijn dépend de la couverture. On n'aura donc pas le même k-mer optimal pour les génomes mitochondrial et chloroplastique. Nous prendrons en compte cette disparité de couverture pour notre stratégie d'assemblage.
+
+\begin{comment}
+On visualise les alignements à l'aide du logiciel IGV. Sur la mitochondrie, on peut repérer visuellement de grands réarrangements.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{Alignement/rearrangement-cvi0.png}
+\label{rearrangement}
+\caption{Un possible réarrangement sur le génome mitochondrial de Cvi-0 : on repère une zone où aucun read n'a mappé entourée de zones avec des reads de mauvaise qualité (en blanc) et des reads qui ont une mauvaise taille d'insert (en bleu et en rouge)}
+\end{figure}
+
+Nous avons comptabilisé ces réarrangements et noté leur position approximative sur la mitochondrie. Après l'assemblage, nous comparerons nos résultats à la référence afin de voir si nous retrouvons les mêmes réarrangements aux mêmes endroits. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+  \hline
+ & Nombre & Positions (début-fin en kb) \\ 
+  \hline
+Kz-9 & 4 &\\ 
+  Sha & 4 & \\ 
+  Blh-1 & 4 & \\ 
+  Bur-0 & 3 & \\ 
+  Ct-1 & 3 & \\ 
+  Cvi-0 & 4 & 17-18, 112-125, 279-281, 292-302\\ 
+  Ita-0 & 0 & \\ 
+  Jea & 1 & \\ 
+  Mr-0 & 3 & \\ 
+  Oy-0 & 5 & \\ 
+   \hline
+\end{tabular}
+\caption{Le nombre de réarrangements visibles sur les alignements et leurs positions}
+\end{table}
+\end{comment}
+
+\subsection{Réduction des jeux de données}
+\hspace{1cm}\textbf{Exemple pour Cvi-0 normalisé à 30X}\\
+
+\begin{comment}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Assemblage/couvavantapres.pdf}
+\label{norm}
+\caption{La couverture le long de la mitochondrie de référence pour Cvi-0 avant et après normalisation à 30X avec khmer}
+\end{figure}
+
+On a aligné le jeux de données à la référence (sans chromosome 2) avant et après normalisation. Avant normalisation, on constate que la couverture le long de la mitochondrie varie entre 30 et 90X. Les pics vers le bas correspondent à des régions de la mitochondrie présentes également sur le noyau. Les reads correspondant à ces régions sont majoritairement mitochondriaux mais vont se répartir aléatoirement entre le noyau et la mitochondrie (choix aléatoire d'un best hit parmi plusieurs lors de l'alignement), ce qui diminue artificiellement la couverture de la mitochondrie à ces endroits et gonfle celle du noyau. C'est pour cette raison qu'on a masqué le chromosome 2 de la référence pour cette alignement. Ce chromosome présente de très grandes nombreuses insertions mitochondriales et déstabilise complètement la couverture le long de la mitochondrie si on ne le masque pas. 
+
+Après normalisation, la couverture le long de la mitochondrie varie beaucoup moins. Elle est centrée autour de 40X. On constate l'apparence de nouveaux pics vers le bas. Ils correspondraient à des régions de la mitochondrie commune avec le chloroplaste. Les k-mer communs à la mitochondrie et au chloroplaste ont vus leur abondance réduite par khmer à 40X en tout ; ils recouvrent donc en moyenne 20X la mitochondrie et 20X le chloroplaste d'où les chutes ponctuelles de couverture.  \\
+\end{comment}
+
+La figure \ref{normfilt:1} illustre l'effet de la normalisation sans filtration. On vérifie que la normalisation ramène bien le chloroplaste et la mitochondrie a un même niveau de couverture. 
+
+La figure \ref{normfilt:2} met en évidence l'effet de différents niveaux de filtration. Nous avions commencé avec un seuil de filtration de 3X afin d'éliminer le noyau, dont la couverture est de 1.3X environ pour Cvi-0. Cependant, après assemblage de notre jeu de données normalisé et filtré, la plupart des contigs obtenus étaient faiblement couverts et s'alignaient sur le noyau. Un seuil de filtration faible est donc insuffisant pour éliminer la majorité des reads du noyau. 
+
+Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtration (jusqu'à 15X pour des données normalisées à 30X!). Néanmoins, comme le montre la figure \ref{normfilt:2}, de telles valeurs du seuil de normalisation ne dégradent pas la qualité du jeu de données. 
+
+
+\begin{figure}[H]
+\centering
+
+\subfloat[Avant normalisation, on constate 2 pics, situés autour de 20 et 250 sur l'axe des abscisses. Cela signifie qu'on trouve dans notre jeu de données un grand nombre de 25-mers qui apparaissent autour de 20 fois et de 150 fois. Ce sont probablement des 25-mers qui appartiennent à la mitochondrie et au chloroplaste respectivement. Après normalisation, nous n'avons plus qu'un seul pic à 20 sur l'axe des abscisses. Les 25-mers mitochondriaux et chloroplastiques apparaissent donc désormais en moyenne 20 fois dans le jeu de données normalisé. Les couvertures de la mitochondrie et du chloroplaste ont été homogéinisées.]{
+   \includegraphics[scale=0.5] {Reduction/norm.png}
+   \label{normfilt:1}
+ } 
+ 
+ \subfloat[La filtration permet de diminuer le nombre de 25-mers de très faible abondance sans dégrader les données. En effet, le pic d'abscisse 20 constaté à la figure précédente conserve la même forme. Les 25-mers mitochondriaux et chloroplastiques sont donc épargnés par la filtration. Ils apparaissent toujours entre 10 et 30 fois dans le jeu de données.]{
+   \includegraphics[scale=0.5] {Reduction/filt.png}
+   \label{normfilt:2}
+ }
+
+\label{normfilt}
+\caption{Histogrammes des abondances des 25-mers pour Cvi-0. On représente le nombre y de 25-mers qui apparaissent x fois dans le jeu de données.}
+\end{figure}
+
+
+\begin{comment}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|cc||cc||cc|}
+  \hline
+ & \multicolumn{2}{c||}{Avant} & \multicolumn{2}{c||}{Normalisation avec khmer} & \multicolumn{2}{c|}{Normalisation avec Trinity} \\
+ \hline
+ & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie \\ 
+  \hline
+Cvi-0 & 545.38 & 35.48 & 60.69 & 36.20 & 46.29 & 32.66 \\
+Sha & 2661.22 & 1198.36 & 71.92 & 48.90 & 51.87 & 35.82 \\
+   \hline
+\end{tabular}
+\caption{Les couvertures par accessions avant et après normalisation}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|cc||cc||cc|}
+  \hline
+ & \multicolumn{2}{c||}{Avant} & \multicolumn{2}{c||}{Après ré-échantillonage} & \multicolumn{2}{c|}{Après filtration} \\
+ \hline
+ & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie & Chloroplaste & Mitochondrie \\ 
+  \hline
+Cvi-0 & 545.38 & 35.48 & 191.78 & 13.38 & 185.20 & 21.58 \\
+Sha & 2661.22 & 1198.36 & 285.48 & 133.46 & 995.49 & 747.82 \\ 
+   \hline
+\end{tabular}
+\caption{Les couvertures par accessions avant et après réduction des données par filtrage ou ré-échantillonage}
+\end{table}
+
+\end{comment}
+
+\subsection{Assemblage}
+
+\subsubsection{Contigage avec Velvet}
+\hspace{1.5cm}  \textbf{\small Exemple pour Cvi-0 normalisé à 20X et filtré à 10X}\\
+
+On assemble pour des tailles de k-mer comprises entre 61 et 91, par pas de 10. 
+
+\begin{figure}[H]
+\centerfloat
+\includegraphics[scale=0.4] {Assemblage/quast.png}
+\caption{Les statistiques d'assemblages pour 4 valeurs de k (calculés pour les contigs de taille supérieure à 500 bases)}
+\label{quast}
+\end{figure}
+
+L'assemblage qui a le plus petit nombre de contigs et le plus grand N50 est l'assemblage réalisé avec k=81. La taille de k-mer optimale va donc se situer autour de 81. On assemble à nouveau le jeu de donnée pour des tailles de k-mer comprises entre 75 et 85, par pas de 2.
+
+On trouve une taille de k-mer optimale de 79. L'assemblage a alors 38 contigs d'au moins 500 bases et un N50 de 39kb. Le contig le plus long a une taille de 149kb. 
+
+Avec Nucmer, on compare les contigs obtenus pour une taille de k-mer de 79 avec le chloroplaste de référence et la mitochondrie de référence. Le plus grand contig de l'assemblage est un contig chimérique. Il s'agit d'un contig chloroplastique qui contient trois grands morceaux d'ADN mitochondrial (de taille 13, 17 et 18kb). Chez la référence, il existe des insertions d'ADN mitochondrial dans le chloroplaste  mais ces insertions sont de petite taille (inférieure à 1kb). Plusieurs grandes insertions d'ADN mitochondrial dans le chloroplaste ont plus de chance de correspondre à un mauvais assemblage qu'à une différence entre les chloroplaste des accessions. 
+
+Pour s'en assurer, on regarde l'assemblage pour k=83, le deuxième meilleur assemblage d'après ses statistiques. Son contig le plus long fait 128kb. Il n'est pas chimérique.
+
+\begin{figure}[H]
+\centerfloat
+\includegraphics[scale=0.7] {Assemblage/chloro_83.png}
+\caption{Graphe de ressemblance entre le plus grand contig obtenu pour k=83 (en ordonnée) et le chloroplaste de référence (en abscisse)\\
+Nous n'avons pas représenté les autres contigs afin de ne pas surcharger la figure.}
+\label{chloro_83}
+\end{figure}
+
+Sur la figure \ref{chloro_83}, on voit que le plus grand contig de l'assemblage s'aligne au chloroplaste de référence dans le sens direct de 0 à 110kb puis dans le sens inverse de 110 à 128kb. Il contient donc la longue région unique du chloroplaste, la première copie de sa région inversée-répétée et la petite région unique du chloroplaste dans le sens inverse (en rouge, bleu et vert sur la figure \ref{schemachloro}). Les trois régions du chloroplaste, qui auraient dû rester distinctes, ont été fusionnées en un seul contig par Velvet. Cet assemblage n'est donc pas bon.
+
+Nous avons testé différents niveaux de normalisation et de filtration mais nous n'avons jamais réussi à obtenir les 3 contigs chloroplastiques attendus. 
+
+\subsubsection{Contigage avec MetaVelvet}
+\hspace{1.5cm}\textbf{\small Exemple pour Cvi-0}\\
+
+Nous avons assemblés plusieurs jeux de données ré-échantillonés (qui ne contiennent que la moitié, le tiers, le quart des données etc.) mais les meilleurs résultats ont été obtenus pour les données brutes simplement filtrées à 10X afin de retirer la contamination nucléaire. Nous les présentons ici. 
+
+On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
+
+\begin{figure}[H]
+\centerfloat
+
+\subfloat[Graphe de ressemblance entre le chloroplaste de référence (en abscisse) et les contigs obtenus (en ordonnée)]{
+   \includegraphics[scale=0.4] {Assemblage/chloro.png}
+   \label{mv:1}
+ } \hspace{5mm}
+\subfloat[Graphe de ressemblance entre la mitochondrie de référence (en abscisse) et les contigs obtenus (en ordonnée)]{
+   \includegraphics[scale=0.4] {Assemblage/mito.png}
+   \label{mv:2}
+ }
+
+\label{mv}
+\caption{Comparaison entre les contigs obtenus et la référence. Tous les contigs ne figurent pas.}
+\end{figure}
+
+En figure \ref{mv:1}, on voit qu'on retrouve dans notre assemblage la longue région unique, la région répétée et la petite région unique du chloroplaste. Ces trois régions correspondent à différents contigs et sont donc bien distinctes. On n'a cependant pas 3 contigs différents mais 5 (la petite région unique et la région répétée sont chacune séparée en deux contigs). 
+La figure \ref{mv:2} nous montre qu'on a également dans notre assemblage des contigs qui recouvrent entièrement la mitochondrie de référence. 
+
+\begin{figure}[H]
+\centerfloat
+
+\subfloat[Les contigs chloroplastiques]{
+\begin{tabular}{|l|c|c|c|}
+\hline
+  & Nom & Taille (bp) & Couverture (X) \\
+\hline
+Longue région unique & Noeud 1379 &  84093 & 554 \\
+\hline
+Région répétée & Noeud 8 & 813 & 933 \\
+\cline{2-4}
+ & Noeud 297 & 15209 & 1117\\
+\cline{2-4}
+ & Noeud 331 & 10265 & 906 \\
+\hline
+Petite région unique & Noeud 34 & 3990 & 502 \\
+\cline{2-4}
+ & Noeud 360 & 13798 & 594 \\
+\hline
+\end{tabular}
+
+\label{contig:1}
+ } \hspace{5mm}
+\subfloat[Les contigs mitochondriaux]{
+\begin{tabular}{|c|c|c|}
+\hline
+Nom & Taille (bp) & Couverture (X) \\
+\hline
+Noeud 7 & 62590 & 60 \\
+\hline
+Noeud 105 & 21238 & 62 \\
+\hline
+Noeud 138 & 20691 & 66 \\
+\hline
+Noeud 222 & 67121 & 56 \\
+\hline
+Noeud 223 & 455 & 76 \\
+\hline
+Noeud 227 & 15628 & 53 \\
+\hline
+Noeud 296 & 44684 & 67 \\
+\hline
+Noeud 514 & 18462 & 65 \\
+\hline
+Noeud 541 & 62127 & 60 \\
+\hline
+Noeud 3153 & 28796 & 61 \\
+\hline
+Noeud 6544 & 335 & 66 \\
+\hline
+\end{tabular}
+
+\label{contig:2}
+ }
+
+\label{contig}
+\caption{Les contigs s'alignant sur le chloroplaste ou la mitochondrie de référence et possédant une couverture cohérente}
+\end{figure}
+
+On réaligne les données brutes sur les contigs. On voit que de nombreux contigs présent sur les graphes de ressemblances \ref{mv:1} et \ref{mv:2} possèdent bien la couverture attendue : environ 60X pour la mitochondrie et 560X pour le chloroplaste (le double pour sa région répétée). La liste de ces contigs est donnée dans les tables \ref{contig:1} et \ref{contig:2}. 
+
+Cependant, on trouve également de nombreux contigs qui ne passent pas l'étape de consistence interne. Il s'agit : 
+\begin{enumerate}
+\item de contigs qui s'alignent sur le noyau de l'accession de référence d'après nucmer ou Blast mais sont extrêmement couverts par les reads bruts 
+
+D'après des recherches dans Blast, ces contigs correspondent à des unités répétées d'ADN ribosomique, d'où leur forte couverture.
+
+\item de contigs qui s'alignent sur la mitochondrie ou le chloroplaste de référence d'après nucmer ou Blast mais dont la couverture n'est pas celle qui est attendue
+
+Trois contigs apparaissent plusieurs fois dans le génome mitochondrial de C24 d'après Blast. Ces contigs peuvent également correspondre à des répétitions chez Cvi-0. 
+
+A l'opposé, on a également trois petits contigs qui s'alignent sur la mitochondrie de référence mais dont la couverture est pratiquement nulle. Ces petits contigs, présents chez la mitochondrie de C24, ont peut-être été supprimés du génome mitochondrial de Cvi-0.
+
+\begin{figure}[H]
+\centerfloat
+
+\subfloat[Des contigs possiblement répetées]{
+\begin{tabular}{|c|c|c|}
+\hline
+Nom & Taille (bp) & Couverture (X) \\
+\hline
+Noeud 1122 & 2089 & 94 \\ 
+\hline
+Noeud 1668 & 2163 & 108 \\
+\hline
+Noeud 2098 & 508 & 90 \\
+\hline
+\end{tabular}
+\label{inc:1}
+ } \hspace{5mm}
+\subfloat[Des séquences appartenant à la mitochondrie de C24 mais peut-être pas à celle de Cvi-0]{
+\begin{tabular}{|c|c|c|}
+\hline
+Nom & Taille (bp) & Couverture (X) \\
+\hline
+Noeud 1243 & 251 & 0.6 \\ 
+\hline
+Noeud 4426 & 230 & 0 \\
+\hline
+Noeud 4766 & 200 & 0.75 \\
+\hline
+\end{tabular}
+
+\label{inc:2}
+ }
+
+\label{inc}
+\caption{Des possibles répétitions et délétions dans le génome mitochondrial de Cvi-0}
+\end{figure}
+
+Il existe également des séquences chloroplastiques dont la couverture est trop faible mais on ignore encore pourquoi. 
+
+\end{enumerate}
+
+Nous avons essayé d'utiliser ContigLink pour répérer les contigs mal formés mais sans succès. En effet, si on considère un contig qu'on sait être bien formé, par exemple le noeud 1379 correspondant à la longue région unique du chloroplaste (voir table \ref{contig:1}), on voit que 3629 paires s'alignent sur ce contig avec une bonne taille d'insert et 72692 avec une mauvaise taille d'insert, ce qui représente un ration "mauvaises paires"/"bonnes paires" de 0.05. 
+
+Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple l'unique contig chloroplastique trouvé par Velvet à la section précédente, on voit que ce mauvais contig est supporté par 7413 "mauvaises paires" pour 132255 "bonnes paires" d'où un ratio de 0.06. On ne peut donc pas utiliser le nombre de paires s'alignant sur un contig avec une taille d'insert incohérente pour distinguer les bons et les mauvais contigs. 
+
+\subsubsection{Scaffolding avec Bambus2}
+
+\subsubsection{Assemblage avec SGA}
+ 
+\section{Discussion}
+
+\subsection{Comparaison entre les assembleurs}
+
+
+
+
+
+
+\subsection{Un scaffolder sachant scaffolder ne scaffolde jamais sans ses liens}
+
+\subsection{Comparaison entre les accessions}
+
+\section{Conclusion}
+
+
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}
