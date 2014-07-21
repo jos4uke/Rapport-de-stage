@@ -5,7 +5,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
-\usepackage{here}
+%% \usepackage{here}
 \usepackage{comment}
 \usepackage{subfig}
 \usepackage[format=plain,labelfont=sc]{caption}
@@ -120,7 +120,7 @@ Le gène cytoplasmique subit alors une mutation. La plante possède l'allèle d�
 
 Enfin, une mutation N1 du gène nucléaire va être positivement sélectionnée. En effet, cette mutation permet de restaurer une interaction optimale entre les produits des gènes nucléaire et cytoplasmique au niveau physiologique. Les gènes nucléaire et cytoplasmique ont donc évolués main dans la main pour assurer l'adaptation de la plante à son nouvel environnement. 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.8]{Introduction/coadaptation.PNG}
 \caption{La coadaptation nucléo-cytoplasmique \cite{marechal2012mitochondrial}}
@@ -180,7 +180,7 @@ Le chloroplaste présente lui beaucoup de SNPs et peu de réarrangements. On pou
 
 Nous disposons de 10 librairies de reads correspondant chacune à une accession. 
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \begin{tabular}{|l|l|}
 \hline
@@ -331,7 +331,7 @@ Nous avons donc commencé par étudier la structure du chloroplaste de référen
 
 On aligne le chloroplaste de référence contre lui-même à l'aide de Nucmer. Nucmer est une pipeline de la suite MUMmer qui permet d'aligner extrêmement rapidement des génomes entiers contre une référence et de représenter ces alignements sous forme de graphe de ressemblance (dotplots).  
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.3] {Assemblage/chloroVSchloro.png}
 \caption{Dotplot du chloroplaste de référence aligné contre lui-même}
@@ -340,7 +340,7 @@ On aligne le chloroplaste de référence contre lui-même à l'aide de Nucmer. N
 
 La figure \ref{temoinchloro} met en évidence qu'une portion du chloroplaste de référence comprise entre 85 et 110kb est répétée et inversée entre 128 et 154kb. On devrait retrouver la même inversion-répétition chez les chloroplastes des dix accessions naturelles. 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.8] {Assemblage/schemachloro.png}
 \caption{Structure du génome chloroplastique chez \textit{Arabidopsis Thaliana}, toutes accessions confondues}
@@ -389,7 +389,7 @@ Cette dernière information est très utile pour comprendre comment Bambus2 et s
 \subsection{Préparation des séquences}
 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 
 \subfloat[Avant trimming]{
@@ -414,7 +414,7 @@ Le taux de duplication de nos libraries est considéré comme trop élevé par f
 
 \subsection{Alignement}
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \begin{tabular}{|l|cccc|}
   \hline
@@ -447,7 +447,7 @@ A partir du nombre de reads mappés sur chaque génome, on peut avoir une estima
 
 couverture $\approx$ nombre de reads mappés X taille des reads / taille du génome
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \begin{tabular}{|l|ccc|}
   \hline
@@ -475,7 +475,7 @@ Les couvertures mitochondriale et chloroplastique ne sont pas homogènes pour un
 \begin{comment}
 On visualise les alignements à l'aide du logiciel IGV. Sur la mitochondrie, on peut repérer visuellement de grands réarrangements.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.25]{Alignement/rearrangement-cvi0.png}
 \label{rearrangement}
@@ -484,7 +484,7 @@ On visualise les alignements à l'aide du logiciel IGV. Sur la mitochondrie, on 
 
 Nous avons comptabilisé ces réarrangements et noté leur position approximative sur la mitochondrie. Après l'assemblage, nous comparerons nos résultats à la référence afin de voir si nous retrouvons les mêmes réarrangements aux mêmes endroits. 
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \begin{tabular}{|l|c|c|}
   \hline
@@ -516,7 +516,7 @@ La figure \ref{normfilt:2} met en évidence l'effet de différents niveaux de fi
 Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtration (jusqu'à 15X pour des données normalisées à 30X!). Néanmoins, comme le montre la figure \ref{normfilt:2}, de telles valeurs du seuil de normalisation ne dégradent pas la qualité du jeu de données. 
 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centering
 
 \subfloat[Avant normalisation, on constate 2 pics, situés autour de 20 et 250 sur l'axe des abscisses. Cela signifie qu'on trouve dans notre jeu de données un grand nombre de 25-mers qui apparaissent autour de 20 fois et de 150 fois. Ce sont probablement des 25-mers qui appartiennent à la mitochondrie et au chloroplaste respectivement. Après normalisation, nous n'avons plus qu'un seul pic à 20 sur l'axe des abscisses. Les 25-mers mitochondriaux et chloroplastiques apparaissent donc désormais en moyenne 20 fois dans le jeu de données normalisé. Les couvertures de la mitochondrie et du chloroplaste ont été homogéinisées.]{
@@ -540,7 +540,7 @@ Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtratio
 
 On assemble pour des tailles de k-mer comprises entre 61 et 91, par pas de 10. 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centerfloat
 \includegraphics[scale=0.4] {Assemblage/quast.png}
 \caption{Les statistiques d'assemblages pour 4 valeurs de k (calculés pour les contigs de taille supérieure à 500 bases)}
@@ -555,7 +555,7 @@ Avec Nucmer, on compare les contigs obtenus pour une taille de k-mer de 79 avec 
 
 Pour s'en assurer, on regarde l'assemblage pour k=83, le deuxième meilleur assemblage d'après ses statistiques. Son contig le plus long fait 128kb. Il n'est pas chimérique.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centerfloat
 \includegraphics[scale=0.7] {Assemblage/chloro_83.png}
 \caption{Graphe de ressemblance entre le plus grand contig obtenu pour k=83 (en ordonnée) et le chloroplaste de référence (en abscisse)\\
@@ -574,7 +574,7 @@ Nous avons assemblés plusieurs jeux de données ré-échantillonés (qui ne con
 
 On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centerfloat
 
 \subfloat[Graphe de ressemblance entre le chloroplaste de référence (en abscisse) et les contigs obtenus (en ordonnée)]{
@@ -593,7 +593,7 @@ On effectue la recherche de la taille de k-mer optimale comme précédemment. On
 En figure \ref{mv:1}, on voit qu'on retrouve dans notre assemblage la longue région unique, la région répétée et la petite région unique du chloroplaste. Ces trois régions correspondent à différents contigs et sont donc bien distinctes. On n'a cependant pas 3 contigs différents mais 5 (la petite région unique et la région répétée sont chacune séparée en deux contigs). 
 La figure \ref{mv:2} nous montre qu'on a également dans notre assemblage des contigs qui recouvrent entièrement la mitochondrie de référence. 
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centerfloat
 
 \subfloat[Les contigs chloroplastiques]{
@@ -667,7 +667,7 @@ Trois contigs apparaissent plusieurs fois dans le génome mitochondrial de C24 d
 
 A l'opposé, on a également trois petits contigs qui s'alignent sur la mitochondrie de référence mais dont la couverture est pratiquement nulle. Ces petits contigs, présents chez la mitochondrie de C24, ont peut-être été supprimés du génome mitochondrial de Cvi-0.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
 \centerfloat
 
 \subfloat[Des contigs possiblement répetées]{
