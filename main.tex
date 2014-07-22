@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage[linktocpage]{hyperref}
 \usepackage[colorinlistoftodos]{todonotes}
 %% \usepackage{here}
 \usepackage{comment}
@@ -11,6 +12,23 @@
 \usepackage{subfig}
 \usepackage{array,multirow,makecell}
 \usepackage{fancyhdr}
+\usepackage{cite}
+\usepackage{color,soulutf8}
+
+%% notes
+%% commands
+\newcommand{\mynotes}[1]{\textcolor{red}{#1}}
+\newcommand{\addref}[1]{\todo[color=pink!40]{#1}}
+\newcommand{\add}[1]{\todo[color=cyan!40]{#1}}
+\newcommand{\remove}[1]{\todo[color=red!40]{#1}}
+\newcommand{\rewrite}[1]{\todo[color=green!40]{#1}}
+\newcommand{\hladdref}[2]{\hl{#1} \addref{#2}}
+\newcommand{\hladd}[2]{\hl{#1} \add{#2}}
+\newcommand{\hlremove}[2]{\hl{#1} \remove{#2}}
+\newcommand{\hlrewrite}[2]{\hl{#1} \rewrite{#2}}
+\newcommand{\hlcomment}[2]{\hl{#1} \todo{#2}}
+%%
+
 \pagestyle{fancy}
 
 \fancypagestyle{plain}{
@@ -57,16 +75,19 @@ Myriam \textsc{Shafie}
 \end{minipage}
 \begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
-\emph{Tuteur} \\
-Fabienne \textsc{Granier}
+	\emph{Tuteur} \\
+	\mynotes{il me semble que tu as 3 encadrants} \\
+	Fabienne \textsc{Granier} \\
+	\mynotes{Delphine Charif} \\
+	\mynotes{Joseph Tran}
 \end{flushright}
 \end{minipage}
 
-\vspace{3cm}
+\vspace{2cm}
 
 \includegraphics[scale=0.2]{Titre/a_thaliana.jpg}
 
-\vspace{3cm}
+\vspace{1cm}
 
 Equipe Bioinformatique et Informatique \\[0.2cm]
 Institut Jean-Pierre Bourgin \\[0.2cm]
@@ -84,6 +105,11 @@ INRA Centre de Versailles-Grignon
 \renewcommand{\contentsname}{Table des matières} 
 
 \tableofcontents
+
+%% notes todolist
+\todototoc 
+\listoftodos
+%%
 
 \newpage
 
@@ -112,13 +138,13 @@ Les plantes vertes possèdent trois compartiments génétiques : le noyau, la mi
 
 Cependant, la mitochondrie et le chloroplaste conservent un petit nombre de gènes cruciaux à leur fonctionnement. Ces gènes ne se suffisent bien évidemment pas à eux-mêmes. Les produits codés par le noyau et par les organites doivent absolument interagir entre eux pour que la mitochondrie et le chloroplaste fonctionnement correctement. 
 
-Ainsi, une co-évolution du génome nucléaire et cytoplasmique paraît obligatoire, car un changement dans l'un doit forcément être refléter par un changement dans l'autre afin de perpétuer leur interaction. Ce mécanisme fait que les génomes du noyau et des organites vont s'adapter à l'environnement de manière coopérative.
+Ainsi, une co-évolution du génome nucléaire et cytoplasmique paraît obligatoire, car un changement dans l'un doit forcément être \hlrewrite{refléter}{reflété} par un changement dans l'autre afin de perpétuer leur interaction. Ce mécanisme fait que les génomes du noyau et des organites vont s'adapter à l'environnement de manière coopérative.
 
-La figure \ref{coadaptation} illustre ce principe. Il présente trois étapes de l'histoire évolutive d'une plante. Initialement, la plante possède l'allèle ancestrale N0 pour un gène du noyau et l'allèle ancestrale C0 pour un gène d'un des organites. Les produits de ces deux gènes interagissent correctement au niveau physiologique. Cet interaction contribue à la fitness globale de la plante et à son phénotype.
+La figure \ref{coadaptation} illustre ce principe. Il présente trois étapes de l'histoire évolutive d'une plante. Initialement, la plante possède l'allèle \hlrewrite{ancestrale}{ancestral} N0 pour un gène du noyau et l'allèle \hlrewrite{ancestrale}{ancestral} C0 pour un gène d'un des organites. Les produits de ces deux gènes interagissent correctement au niveau physiologique. Cet interaction contribue à la fitness globale de la plante et à son phénotype.
 
-Le gène cytoplasmique subit alors une mutation. La plante possède l'allèle dérivée C1 pour le gène cytoplasmique mais toujours l'allèle ancestrale N0 pour le gène nucléaire. L'interaction des produits des deux gènes est toujours possible mais elle est un peu moins efficace au niveau physiologique. Cependant, la fitness globale de la plante n'est pas diminuée, par exemple parce que la mutation C1 permet à la plante de s'adapter à un changement dans son environnement. La mutation C1 va donc être fixée. 
+Le gène cytoplasmique subit alors une mutation. La plante possède l'allèle \hlrewrite{dérivée}{dérivé} C1 pour le gène cytoplasmique mais toujours l'allèle \hlrewrite{ancestrale}{ancestral} N0 pour le gène nucléaire. L'interaction des produits des deux gènes est toujours possible mais elle est un peu moins efficace au niveau physiologique. Cependant, la fitness globale de la plante n'est pas diminuée, par exemple parce que la mutation C1 permet à la plante de s'adapter à un changement dans son environnement. \hlcomment{La mutation C1 va donc être fixée.}{Un peu trop déterministe} 
 
-Enfin, une mutation N1 du gène nucléaire va être positivement sélectionnée. En effet, cette mutation permet de restaurer une interaction optimale entre les produits des gènes nucléaire et cytoplasmique au niveau physiologique. Les gènes nucléaire et cytoplasmique ont donc évolués main dans la main pour assurer l'adaptation de la plante à son nouvel environnement. 
+Enfin, une mutation N1 du gène nucléaire va être positivement sélectionnée. En effet, cette mutation permet de restaurer une interaction optimale entre les produits des gènes nucléaire et cytoplasmique au niveau physiologique. Les gènes nucléaire et cytoplasmique ont donc évolués \hlrewrite{main dans la main}{conjointement} pour assurer l'adaptation de la plante à son nouvel environnement. 
 
 \begin{figure}[!ht]
 \centering
@@ -135,7 +161,7 @@ On peut obtenir par croisements une plante qui possède le génome nucléaire de
 
 \subsection{Le projet CytoPhéno}
 
-Le projet CytoPhéno (signifiant \textit{Co-adaptation nucléo-cytoplasmique et phénotypes adaptatifs des plantes}) a été mis en place en 2012. Il est piloté par Françoise Budar, directrice de l'équipe Organites et Reproduction de l'IJPB, mais il implique également de nombreuses autres partenaires de l'INRA et du CNRS. 
+Le projet CytoPhéno (signifiant \textit{Co-adaptation nucléo-cytoplasmique et phénotypes adaptatifs des plantes}) a été mis en place en 2012. Il est piloté par Françoise Budar, directrice de l'équipe Organites et Reproduction de l'IJPB, mais il implique également de \hlrewrite{nombreuses}{nombreux} autres partenaires de l'INRA et du CNRS. 
 
 Ce projet possède deux volets de recherche, bien évidemment liés : la co-adapatation nucléo-cytoplasmique et le rôle du cytoplasme dans l'adaptation de la plante à son environnement. 
 
@@ -148,7 +174,7 @@ A partir de ces 8 accessions naturelles, les chercheurs ont crée 56 cytolignée
 Le projet CytoPhéno comporte différentes étapes.
 
 \begin{enumerate}
-\item l'étude des variantes génétiques mitochondrial et chloroplastique pour les 8 accessions naturelles
+	\item l'étude des \hlrewrite{variantes}{variations} \add{génomiques et} génétiques mitochondrial et chloroplastique pour les 8 accessions naturelles
 \item la production d'un grand nombre de graines pour les accessions naturelles et les cytolignées
 \item l'identification des gènes nucléaires et cytoplasmiques impliqués dans la co-adaptation  
 \item le phénotypage de la core collection et des cytolignées pour différents traits (germination, réponse à différents niveaux de nitrogène etc.)
@@ -165,13 +191,13 @@ Quels traits potentiellement adaptatifs sont modifiés par des variations du gé
 
 Lors de mon stage, j'ai travaillé sur la première tâche du projet CytoPhéno : l'analyse des génomes mitochondriaux et chloroplastique des 8 accessions naturelles.
 
-Le but de cet tâche est de trouver des polymorphismes non neutres entre les différentes accessions. En effet, les gènes présents dans des versions significativement différentes selon les accessions sont peut-être impliqués dans la rupture de la coadaptation nucléo-cytoplasmique. 
+Le but de \hlrewrite{cet}{cette} tâche est de trouver des polymorphismes non neutres entre les différentes accessions. En effet, les gènes présents dans des versions significativement différentes selon les accessions sont peut-être impliqués dans la rupture de la coadaptation nucléo-cytoplasmique. 
 
 Pour trouver ces variants, il va falloir aligner ou assembler les génomes mitochondriaux et chloroplastiques des 8 accessions puis les annoter. 
 
 Les mitochondries des plantes évoluent peu par mutations ponctuelles et beaucoup par réarrangements. Des pans entiers de génomes vont donc être réordonnées entre nos 8 accessions naturelles et la référence dont nous disposons (génome mitochondrial de l'accession C24). On privilégie donc l'assemblage \textit{de novo} par rapport à l'alignement pour la mitochondrie.
 
-Le chloroplaste présente lui beaucoup de SNPs et peu de réarrangements. On pourrait donc l'aligner à une référence. Cependant, les données dont nous disposons contiennent à la fois les génomes mt et ct. Séparer les deux génomes est difficile car il y a des insertions du génome chloroplastique dans la mitochondrie et vice-versa. Les bioinformaticiens de l'IJPB ont donc optés pour un assemblage \textit{de novo} simultané des génomes mt et ct.
+Le chloroplaste présente lui beaucoup de SNPs et peu de réarrangements. On pourrait donc l'aligner à une référence. Cependant, les données dont nous disposons contiennent à la fois les génomes mt et ct. Séparer les deux génomes est difficile car il y a des insertions du génome chloroplastique dans la mitochondrie et vice-versa. Les bioinformaticiens de l'IJPB ont donc \hlrewrite{optés}{opté} pour un assemblage \textit{de novo} simultané des génomes mt et ct.
 
 
 \section{Matériels et méthodes}
