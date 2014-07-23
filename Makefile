@@ -1,12 +1,18 @@
-all: clean tocpdf
+all: clean tocbibpdf
 
-tocpdf: main.tex
+tocbibpdf: main.tex
 	# generate toc
 	pdflatex main.tex; \
 	echo "toc: done"; \
-	# genertae pdf with toc
+	# generate bib
+	bibtex main; \
+	echo "bib: done"; \
+	# generate toc + bib
+	#pdflatex main.tex; \
+	#echo "toc+bib: done"; \	
+	# generate pdf with toc and bib
 	pdflatex main.tex; \
-	echo "pdf+toc: done";
+	echo "pdf+toc+bib: done";
 
 clean_toc:
 	# main.aux  main.log  main.out  main.pdf  main.tdo  main.tex  main.toc
