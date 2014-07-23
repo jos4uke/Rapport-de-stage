@@ -14,6 +14,7 @@
 \usepackage{fancyhdr}
 \usepackage{cite}
 \usepackage{color,soulutf8}
+\usepackage[nottoc,numbib]{tocbibind}
 
 %% notes
 %% commands
@@ -23,10 +24,10 @@
 \newcommand{\remove}[1]{\todo[color=red!40]{#1}}
 \newcommand{\rewrite}[1]{\todo[color=green!40]{#1}}
 \newcommand{\hladdref}[2]{\hl{#1} \addref{#2}}
-\newcommand{\hladd}[2]{\hl{#1} \add{#2}}
-\newcommand{\hlremove}[2]{\hl{#1} \remove{#2}}
-\newcommand{\hlrewrite}[2]{\hl{#1} \rewrite{#2}}
-\newcommand{\hlcomment}[2]{\hl{#1} \todo{#2}}
+\newcommand{\hladd}[1]{\sethlcolor{cyan} \hl{#1} \add{#1}}
+\newcommand{\hlremove}[1]{\sethlcolor{red} \hl{#1} \remove{#1}}
+\newcommand{\hlrewrite}[2]{\sethlcolor{green} \hl{#1} \rewrite{#2}}
+\newcommand{\hlcomment}[2]{\sethlcolor{orange} \hl{#1} \todo{#2}}
 %%
 
 \pagestyle{fancy}
@@ -104,10 +105,12 @@ INRA Centre de Versailles-Grignon
 
 \renewcommand{\contentsname}{Table des matières} 
 
+\cleardoublepage
+\pdfbookmark{\contentsname}{toc}
 \tableofcontents
 
 %% notes todolist
-\todototoc 
+%% \todototoc 
 \listoftodos
 %%
 
@@ -174,7 +177,7 @@ A partir de ces 8 accessions naturelles, les chercheurs ont crée 56 cytolignée
 Le projet CytoPhéno comporte différentes étapes.
 
 \begin{enumerate}
-	\item l'étude des \hlrewrite{variantes}{variations} \add{génomiques et} génétiques mitochondrial et chloroplastique pour les 8 accessions naturelles
+	\item l'étude des \hlrewrite{variantes}{variations} \hladd{génomiques et} génétiques mitochondrial et chloroplastique pour les 8 accessions naturelles
 \item la production d'un grand nombre de graines pour les accessions naturelles et les cytolignées
 \item l'identification des gènes nucléaires et cytoplasmiques impliqués dans la co-adaptation  
 \item le phénotypage de la core collection et des cytolignées pour différents traits (germination, réponse à différents niveaux de nitrogène etc.)
@@ -236,17 +239,17 @@ Les génomes mitochondriaux et chloroplastiques des 10 accessions ont été séq
 
 Avant d'aligner ou d'assembler ces reads, il est nécessaire d'effectuer une analyse de qualité. Elle nous permettra de détecter d'éventuelles contaminations de la librairie ou des problèmes de séquençage (par exemple, une mauvaise qualité d'imagerie sur une flowcell va donner un sous-ensemble de reads de mauvaise qualité).
 
-On effectue l'analyse de qualité avec fastqc. Cet outil possède plusieurs modules qui vont chacune évaluer un indicateur : la qualité des bases (selon leur position sur le read), la longueur des reads etc. Chacune des ces mesures est comparée à ce qui est attendu pour une librairie aléatoire. Si l'observé et le prédit sont proches, le module est validé.
+On effectue l'analyse de qualité avec fastqc. Cet outil possède plusieurs modules qui vont chacune évaluer un indicateur : la qualité des bases (selon leur position sur le read), la longueur des reads etc. Chacune des ces mesures est comparée à ce qui est attendu pour une librairie aléatoire. Si l'observé et \hlrewrite{le prédit}{l'attendu} sont proches, le module est validé.
 
 Si le module est rejeté, cela signifie que la librairie étudiée diffère sur ce point d'une librairie aléatoire. Cette différence peut provenir d'une contamination ou d'un biais de séquençage mais elle peut également résulter de la réalité biologique de nos données (qui ne sont, bien évidemment, pas aléatoires).
 
 Il est donc nécessaire de regarder non seulement le résultats des tests (module validé, non validé ou à la limite de validation) mais aussi la sortie graphique de chaque module. fastqc fournit une représentation graphique de chaque indicateur testé : boxplot des qualités de chaque base selon leur position dans le read, abondance des reads en fonction de leur longueur etc. 
 
-Si les indicateurs sont normaux pour notre librairie, on peut procéder au nettoyage des reads. Pour cela, on utilise l'outil Trimmomatic.
+\hlcomment{Si les indicateurs sont normaux pour notre librairie, on peut procéder au nettoyage des reads. Pour cela, on utilise l'outil Trimmomatic.}{C'est à nuancer, le fait que des indicateurs soient au rouge, cela peut ou non poser problème mais certains peuvent être ignorés sans que cela impacte le reste de l'analyse}
 
 Trimmomatic va supprimer aux extrémités 3' et 5' les bases dont la qualité est inférieure à 20 (ce qui signifie que la base a une chance sur cent d'avoir été mal identifiée). Puis, il fait glisser une fenêtre de 4 nucléotides sur la séquence : si la qualité moyenne de la fenêtre est inférieure à 15, elle est supprimée. Les reads devenus trop courts (moins de 50 bases) sont ensuite jetés.
 
-Après trimming, on refait une analyse de qualité sur les reads retenus pour vérifier que le nettoyage a bien amélioré la qualité de la librairie.
+Après trimming, on refait une analyse de qualité sur les reads \hlrewrite{retenus}{retenues} pour vérifier que le nettoyage a bien amélioré la qualité de la librairie.
 
 \subsection{Alignement}
 
@@ -264,25 +267,25 @@ Il nous permettra :
 
 Pour l'alignement, on utilise l'outil bwa. On autorise 2 événements indépendants seulement (par exemple, un mismatch plus un micro-indel). Ce critère stringent est adapté au génome mitochondrial, où il y a très peu de mutations ponctuelles.
 
-Les alignements obtenus sont au format SAM, où chaque read correspond à une ligne. Si un read s'aligne à plusieurs endroits du génome, un seul alignement est choisi au hasard. Cela nous contraint à masquer le chromosome 2 de la référence. En effet,  la quasi-totalité de la mitochondrie est insérée à l'intérieur de ce chromosome.\cite{chr2} Donc, si nous ne le masquions pas, les reads mitochondriaux auraient un best hit sur la mitochondrie et un best hit sur le chromosome 2 et la moitié d'entre eux environ seraient assigné au noyau. L'estimation de la couverture mitochondriale serait alors complètement faussée. 
+Les alignements obtenus sont au format SAM, où \hlrewrite{chaque read correspond à une ligne.}{à chaque ligne correspond une read.} Si \hlrewrite{un}{une} read s'aligne à plusieurs endroits du génome, un seul alignement est choisi au hasard. Cela nous contraint à masquer le chromosome 2 de la référence. En effet,  la quasi-totalité de la mitochondrie est insérée à l'intérieur de ce chromosome.\cite{chr2} Donc, si nous ne le masquions pas, les reads mitochondriaux auraient un best hit sur la mitochondrie et un best hit sur le chromosome 2 et la moitié d'entre \hlrewrite{eux}{elles} environ seraient assigné au noyau. L'estimation de la couverture mitochondriale serait alors complètement faussée. 
 
 \subsection{Réduction des jeux de données}
 
 En une fois, on ne séquence par shotgun qu'une fraction aléatoire du génome. Pour être sur que nos reads couvrent 90\% et plus du génome, il est nécessaire d'échantilloner le génome un très grand nombre de fois. Certaines régions se retrouveront dans de nombreux échantillons et auront donc une forte couverture. D'autres se retrouveront dans peu d'échantillons et seront peu couvertes. Une minorité de reads seront donc cruciaux et une majorité de reads complètement redondants. 
 
-Cette grande quantité de reads inutiles va poser des problèmes à l'assemblage. Le temps et la mémoire nécessaire pour les traiter sont non négligeables. De plus, ces reads contiennent des erreurs de séquençage. Si on les éliminait, la qualité de l'assemblage serait améliorée, particulièrement pour les assembleurs utilisant des graphes de Bruijn, que les noeuds et les arrêtes erronés peuvent rapidement envahir quand les jeux de données sont trop gros.
+Cette grande quantité de reads inutiles va poser des problèmes à l'assemblage. Le temps et la mémoire nécessaire pour les traiter sont non négligeables. De plus, ces reads contiennent des erreurs de séquençage. Si on les éliminait, la qualité de l'assemblage serait améliorée, particulièrement pour les assembleurs utilisant des graphes de \hlrewrite{Bruijn}{De Bruijn}, que les noeuds et les arrêtes erronés peuvent rapidement envahir quand les jeux de données sont trop gros.
 
 On va tester deux approches pour réduire le jeu de données. \\
 
 Premièrement, le ré-échantillonage. Il consiste simplement à tirer aléatoirement un échantillon dans la librairie. On choisit la taille de l'échantillon en fonction des couvertures mitochondrial et chloroplastique qu'on souhaite obtenir.
 
-Par exemple, pour Cvi-0, les couvertures des génomes mitochondrial et chloroplastique ont été estimées par alignement à 60X et 560X pour le jeu de donnée brut. En ne conservant en moyenne qu'un read sur trois, nous devrions obtenir une couverture de 20X sur la mitochondrie et de 190X sur le chloroplaste. 
+Par exemple, pour Cvi-0, les couvertures des génomes mitochondrial et chloroplastique ont été estimées par alignement à 60X et 560X pour le jeu de donnée brut. En ne conservant en moyenne qu'\hlrewrite{un}{une} read sur trois, nous devrions obtenir une couverture de 20X sur la mitochondrie et de 190X sur le chloroplaste. 
 
-Nous ne connaissons pas \textit{à priori} quelles couvertures des génomes mt et ct vous nous donner les meilleurs résultats. Nous sommes donc obligés de tester plusieurs valeurs, en gardant toutefois en tête que des couvertures très élevées (supérieures à 1000X) ont peu de chances de founir de bons assemblages.\\
+Nous ne connaissons pas \textit{à priori} quelles couvertures des génomes mt et ct \hlrewrite{vous}{vont} nous donner les meilleurs résultats. Nous sommes donc obligés de tester plusieurs valeurs, en gardant toutefois en tête que des couvertures très élevées (supérieures à 1000X) ont peu de chances de founir de bons assemblages.\\
 
 Deuxièmement, la normalisation digitale. Cette procédure utilise la distribution de l'abondance des k-mers pour estimer la couverture par read et éliminer les reads dont la couverture dépasse la limite imposée.\cite{brown2012reference} Elle présente l'avantage, outre de réduire la taille du jeu de données, d'homogéiniser les couvertures des deux génomes.
 
-On va normaliser les données avec khmer. Ce programme propose également un outil de filtration des données. Il permet de supprimer les reads contenant des k-mers d'abondance inférieure à la limite choisie. Ces k-mers de faible abondance correspondent à des erreurs de séquençage et, dans notre cas, à de la contamination nucléaire. On va donc appliquer une filtration après normalisation pour essayer de supprimer tous les reads correspondant au noyau. 
+On va normaliser les données avec khmer. Ce programme propose également un outil de filtration des données. Il permet de supprimer les reads contenant des k-mers d'abondance inférieure à la limite choisie. Ces k-mers de faible abondance correspondent à des erreurs de séquençage et, dans notre cas, à de la contamination nucléaire. On va donc appliquer une filtration après normalisation pour essayer de supprimer \hlrewrite{tous}{toutes} les reads correspondant au noyau. 
 
 Les seuils de normalisation et de filtration ne sont pas connus au préalable. On est obligé de procéder par tâtonnements en testant plusieurs valeurs des paramètres. On vérifie que les jeux de données obtenus sont valides, c'est-à-dire que la couverture a bien été réduite et homogénéisée et que les données supprimées étaient bien redondantes.\\ 
 
@@ -296,7 +299,7 @@ Le premier problème auquel nous allons être confrontés est que nous n'assembl
 \begin{itemize}
 \item utiliser un assembleur classique.
 
-Cette option n'est valable que les jeux de données pour lesquels les couvertures des génomes mitochondrial et chloroplastique sont les mêmes (jeux de données normalisés). 
+	Cette option n'est valable que \hladd{si} les jeux de données pour lesquels les couvertures des génomes mitochondrial et chloroplastique sont les mêmes (jeux de données normalisés). 
 
 \item utiliser un assembleur de métagénome.
 
@@ -304,21 +307,21 @@ L'assembleur métagénomique va utiliser les différences de couverture pour dis
 
 \end{itemize}
 
-Pour l'assemblage classique, nous avons utilisé Velvet et SGA. En effet, ces deux assembleurs sont basés sur des principes différents : les graphes de Bruijn pour Velvet et l'Overlap Consensus Layout pour SGA. SGA identifie toutes les paires de reads qui se recouvrent et construit un graphe avec un noeud pour chaque read et une arrête pour chaque paire de reads qui se recouvre. Le graphe est ensuite simplifiée (on retire les arrêtes redondantes) et stocké efficacement grâce à la transformée de Burrows-Wheeler. \cite{simpson2012efficient}
+Pour l'assemblage classique, nous avons utilisé Velvet et SGA. En effet, ces deux assembleurs sont basés sur des principes différents : les graphes de \hlrewrite{Bruijn}{De Bruijn} pour Velvet et l'Overlap \hlrewrite{Consensus Layout}{Layout Consensus} pour SGA. SGA identifie toutes les paires de reads qui se recouvrent et construit un graphe avec un noeud pour chaque read et une arrête pour chaque paire de reads qui se recouvre. Le graphe est ensuite simplifiée (on retire les arrêtes redondantes) et stocké efficacement grâce à la transformée de Burrows-Wheeler. \cite{simpson2012efficient}
 
 Notre assembleur de métagénome sera MetaVelvet. 
 
-A noter que Velvet et MetaVelvet n'ont assuré que la partie contiguage de l'assemblage. La partie scaffolding a été effectuée par Bambus2. Pour SGA, nous avons utilisé son scaffolder intégré (sga scaffold). 
+\hlcomment{A noter que Velvet et MetaVelvet n'ont assuré que la partie contiguage de l'assemblage}{À numancer au vu de tes récents tests qui semble indiquer que pebble intervient dans le scaffolding meme quand il est explicitement non dema,dé à Velvet\dots}. La partie scaffolding a été effectuée par Bambus2. Pour SGA, nous avons utilisé son scaffolder intégré (sga scaffold). 
 
 \subsubsection{Choix des paramètres pour Velvet et MetaVelvet}
 
-L'un des paramètres les plus importants pour un assemblage par graphe de Bruijn est la taille de k-mer utilisé pour construire le graphe. 
+L'un des paramètres les plus importants pour un assemblage par graphe de \hlrewrite{Bruijn}{De Bruijn} est la taille de k-mer utilisé pour construire le graphe. 
 
-Nous avons construit notre propre script pour lancer Velvet avec de multiples valeurs de k. Les deux options les plus importantes, outre la taille du k-mer, sont  \textit{exp\_cov} et \textit{cov\_cutoff}. 
+Nous avons \hlrewrite{construit}{implémenté} notre propre script pour lancer Velvet avec de multiples valeurs de k. Les deux options les plus importantes, outre la taille du k-mer, sont  \textit{exp\_cov} et \textit{cov\_cutoff}. 
 
 \textit{exp\_cov} permet d'indiquer à Velvet la couverture attendue pour une région unique du génome. On aligne le jeu de données normalisé à la référence et on estime à nouveau les couvertures du chloroplaste et de la mitochondrie. On doit obtenir une valeur unique qu'on fournit à \textit{exp\_cov}. 
 
-Les noeuds dont la couverture sont inférieure à \textit{cov\_cutoff} sont retirés du graphe de Bruijn après sa construction. Cette option permet donc d'éliminer toute trace de contamination nucléaire qui aurait échappé au filtrage.  
+Les noeuds dont la couverture sont inférieure à \textit{cov\_cutoff} sont retirés du graphe de \hlrewrite{Bruijn}{De Bruijn} après sa construction. \todo{Je nuancerais l'efficacité du filtre\dots}\hlrewrite{Cette option permet donc d'éliminer toute trace de contamination nucléaire qui aurait échappé au filtrage.}{Cette option permet de réduire fortement la contamination nucléaire ou les erreurs qui auraient échappé à la normalisation.}  
 
 Pour MetaVelvet, nous avons procédé exactement de la même façon. La seule différence est que l'option \textit{exp\_cov} est remplacée par \textit{exp\_covs}. On fournit à MetaVelvet les deux pics de couvertures qui correspondent à la mitochondrie et au chloroplaste.
 
@@ -328,7 +331,7 @@ La qualité des assemblages réalisés avec différents k est ensuite comparée 
 
 Bambus2 est une suite de scripts qui effectuent les différentes étapes du scaffolding. 
 
-On commence par créer des liens entre les contigs (clk) puis on rassemble ces liens entre une collection de bord possibles pour les contigs (Bundler). Bambus2 nous permet également de repérer les régions répétées du génome (MarkRepeats). On  utilise ces informations pour placer les contigs les uns par rapport aux autres et les orienter (OrientContigs). Les scaffolds obtenus sous forme de graphe sont ensuite linéarisés et enregistrés au format fasta.  
+On commence par créer des liens entre les contigs (clk) puis on rassemble \hlrewrite{ces liens entre une collection de bord possibles pour les contigs}{les liens connectant une même paire de contigs} (Bundler). Bambus2 nous permet également de repérer les régions répétées du génome (MarkRepeats). On  utilise ces informations pour placer les contigs les uns par rapport aux autres et les orienter (OrientContigs). Les scaffolds obtenus sous forme de graphe sont ensuite linéarisés et enregistrés au format fasta.  
 
 Les deux étapes qui proposent des options intéressantes sont MarkRepeats et OrientContigs. 
 
@@ -336,12 +339,12 @@ Les deux étapes qui proposent des options intéressantes sont MarkRepeats et Or
 
 \subsubsection{Choix des paramètres pour SGA}
 
-SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph et créent les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans}. 
+SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph\hladd{,} \hlremove{et} créent \hladd{et scaffoldent} les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans} et \textit{E. Coli}. 
 
 Pour le scaffolding, on réaligne le jeu de données sur les contigs avec \textit{sga align} et on utilise le fichier BAM obtenu 1)
 pour avoir une liste des liens entre les contigs à l'aide du script Perl \textit{sga-bam2de} 2) pour calculer pour chaque contig la statistique de Myers avec le script Python \textit{sga-astat}. 
 
-Cette statistique sera utilisé par \textit{sga scaffold} pour déterminer quels contigs correspondent à des répétitions : tous les contigs qui ont une statistique de Myers inférieure à un certain seuil sont considérés comme étant répétés. Pour déterminer le bon seuil, on compare les valeurs de la statistique de Myers pour les contigs chloroplastiques uniques et répétées (voir la structure du chloroplaste figure \ref{schemachloro}). On passe également à \textit{sga scaffold} les options \textit{--strict --remove-conflicting} pour avoir les scaffolds les plus conservatifs possibles. 
+Cette statistique sera utilisé par \textit{sga scaffold} pour déterminer quels contigs correspondent à des répétitions : tous les contigs qui ont une statistique de Myers inférieure à un certain seuil sont considérés comme \hlrewrite{étant répétés}{des répétitions}. Pour déterminer le bon seuil, on compare les valeurs de la statistique de Myers pour les contigs chloroplastiques uniques et répétées (voir la structure du chloroplaste figure \ref{schemachloro}). On passe également à \textit{sga scaffold} les options \textit{--strict --remove-conflicting} pour avoir les scaffolds les plus conservatifs possibles. 
 
 \textit{sga scaffold} donne pour chaque scaffold, la liste des contigs qui le constituent et comment ils sont placés les uns par rapport aux autres. \textit{sga scaffold2fasta} utilise ce fichier pour écrire la séquence des scaffolds au format fasta. On se place dans le mode résolution par graphe ; avec l'option \textit{-g best-any}, on tente de résoudre les gaps entre les contigs en parcourant le graphe et en trouvant le chemin qui correspond le mieux aux distances estimées entre les contigs. 
 
@@ -355,7 +358,7 @@ Comment savoir si nos assemblages sont bons ou pas ? \\
 
 Nous avons donc commencé par étudier la structure du chloroplaste de référence. 
 
-On aligne le chloroplaste de référence contre lui-même à l'aide de Nucmer. Nucmer est une pipeline de la suite MUMmer qui permet d'aligner extrêmement rapidement des génomes entiers contre une référence et de représenter ces alignements sous forme de graphe de ressemblance (dotplots).  
+On aligne le chloroplaste de référence contre lui-même à l'aide de Nucmer. Nucmer est \hlrewrite{une}{un} pipeline de la suite MUMmer qui permet d'aligner extrêmement rapidement des génomes entiers contre une référence et de représenter ces alignements sous forme de graphe de ressemblance (dotplots).  
 
 \begin{figure}[!ht]
 \centering
@@ -378,8 +381,9 @@ La figure \ref{temoinchloro} met en évidence qu'une portion du chloroplaste de 
 \item un contig non chimérique qui mappe sur le chloroplaste de référence entre 0 et 85kb dans le sens direct (en rouge sur la figure \ref{schemachloro})
 \item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 85 et 110kb dans le sens direct et entre 128 et 154kb dans le sens inverse (en bleu sur la figure \ref{schemachloro})
 \item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 110 et 128kb dans le sens direct (en vert sur la figure \ref{schemachloro})
-\item les jonctions entre les 3 contigs (arcs de cercle noirs sur la figure \ref{schemachloro})
+\item \hlremove{les jonctions entre les 3 contigs (arcs de cercle noirs sur la figure} \ref{schemachloro})
 \end{itemize}
+\todo{C'est plus justifié si on décortique les algos des différents assembleurs et qu'on regarde la nature circulaire des génomes que l'on doit assembler.}
 
 Le contiguer ne sait pas que la région représentée en bleue est une région répétée. Il voit seulement qu'à ses extrémités existe plusieurs possibilités. Par exemple, l'extrémité bleu foncé de la région répétée est reliée aux deux extremités de la région unique rouge. Le contiguer ne doit pas faire un choix et fusionner les contigs bleu et rouge dans un sens ou dans l'autre. Il doit les garder séparés. 
 
@@ -389,12 +393,12 @@ Le scaffolder, en revanche, doit pouvoir détecter les régions répétées et r
 
 En alignant nos scaffolds contre le chloroplaste de référence avec Nucmer, on doit retrouver la figure \ref{temoinchloro}. \\
 
-\textbf{Pour la mitochondrie, on ne sait pas précisément ce qu'on doit obtenir.} En raison des nombreux réarrangements qu'elles ont subis, les mitochondries des 10 accessions naturelles vont être très différentes. \cite{arrieta2009diversity} Si on retrouve le même contig mitochondrial chez 9 accessions sur 10, cela ne signifie pas que l'assemblage de la dixième accession est mauvais. On peut néanmoins effectuer plusieurs tests afin de savoir si notre assemblage mitochondrial est plausible ou pas. 
+\textbf{Pour la mitochondrie, on ne sait pas précisément ce qu'on doit obtenir.} \hl{En raison des nombreux réarrangements qu'elles ont subis, les mitochondries des 10 accessions naturelles vont être très différentes}\todo[inline]{Je nuancerais vu que tu viens d'écrire que tu ne savais pas forcément ce qu'on allait obtenir puis de manière affirmative tu dis que ce sera très différent: je dirais qu'il est possible que les génomes mito soient différents vu qu'on étudie la core 8 qui est censé couvrir la variabilité naturelle la plus large}. \cite{arrieta2009diversity} Si on retrouve le même contig mitochondrial chez 9 accessions sur 10, cela ne signifie pas que l'assemblage de la dixième accession est mauvais. On peut néanmoins effectuer plusieurs tests afin de savoir si notre assemblage mitochondrial est plausible ou pas. 
 
 \begin{enumerate}
-\item Avec Nucmer, on aligne les contigs ou les scaffolds contre la mitochondrie de référence afin de savoir si notre assemblage couvre la totalité de la mitochondrie. 
+	\item Avec Nucmer, on aligne les contigs ou les scaffolds contre la mitochondrie de référence afin de savoir si notre assemblage couvre la totalité \hlrewrite{de la mitochondrie}{du génome}. 
 
-\item On aligne les données brutes sur les contigs ou les scaffolds et on regarde si les contigs mitochondriaux et chloroplastique ont la couverture attendue (consistence interne).
+	\item On aligne les données brutes sur les contigs ou les scaffolds et on regarde si les contigs mitochondriaux et chloroplastique ont la couverture attendue (\hlrewrite{consistence}{consistance} interne).
 
 \item On regarde si des paires s'alignent sur le même contig avec des tailles d'insert incohérentes. S'il y en a beaucoup, cela signifie que la structure interne du contig est mauvaise. On peut ainsi repérer et quantifier les mauvais contigs.
 
@@ -402,10 +406,10 @@ Pour compter le nombre de "mauvaises" paires dans chaque contig, on utilise la l
 
 \end{enumerate}
 
-ContigLink prend en entrée l'alignement au format bam des données brutes sur les contigs. Il sépare les pairs qui s'alignent sur un seul et même contig et les pairs qui s'alignent sur deux contigs différents. Ces deux types de pairs vont être utilisés pour calculer deux estimations de la taille d'insert et de son écart-type. ContigLink donne ensuite une estimation de la qualité de l'assemblage. Cette estimation contient : 
+ContigLink prend en entrée l'alignement au format bam des données brutes sur les contigs. Il sépare les \hlrewrite{pairs}{paires} qui s'alignent sur un seul et même contig et les \hlrewrite{pairs}{paires} \hlrewrite{qui s'alignent}{dont la read et la mate s'alignent} sur deux contigs différents. \hlrewrite{Ces deux types de}{Pour chacune de ces 2 catégories de} \hlrewrite{pairs}{paires} \hlremove{vont être utilisés pour calculer deux estimations de} la taille d'insert et \hlremove{de} son écart-type \hladd{sont estimés}. ContigLink donne ensuite une estimation de la qualité de l'assemblage. Cette estimation contient : 
 \begin{itemize}
-\item pour chaque contig, le nombre de pairs s'alignant sur ce contig avec une bonne taille d'insert et une mauvaise taille d'insert (éloignée de son estimation par plus de deux écarts-type)
-\item pour chaque pair de contigs, le nombre de "bonnes" et mauvaises" paires supportant un lien entre ces contigs.
+\item pour chaque contig, le nombre de \hlrewrite{pairs}{paires} s'alignant sur ce contig avec une bonne taille d'insert et une mauvaise taille d'insert (éloignée de son estimation par plus de deux écarts-type)
+\item pour chaque \hlrewrite{pairs}{paires} de contigs, le nombre de "bonnes" et mauvaises" paires supportant un lien entre ces contigs.
 \end{itemize}
 
 Cette dernière information est très utile pour comprendre comment Bambus2 et sga scaffold vont relier les contigs entre eux pour former des scaffolds. 
@@ -496,7 +500,7 @@ Kz-9 & 2845.83 & 1587.55 & 10.60 \\
 
 Pour toutes les accessions, la couverture du noyau est faible devant celles de la mitochondrie et du chloroplaste. Cependant, le génome nucléaire d'\textit{Arabidopsis Thaliana} est 300 fois plus grand que le génome mitochondrial et 1000 fois plus grand que le génome chloroplastique. En nombre de bases, la contamination nucléaire est donc non négligeable et nous devrons nous efforcer de l'éliminer du jeu de données avant l'assemblage. 
 
-Les couvertures mitochondriale et chloroplastique ne sont pas homogènes pour une même accession. Cela va nous poser problème car la taille de k-mer optimale pour l'assemblage par graphe de Bruijn dépend de la couverture. On n'aura donc pas le même k-mer optimal pour les génomes mitochondrial et chloroplastique. Nous prendrons en compte cette disparité de couverture pour notre stratégie d'assemblage.
+Les couvertures mitochondriale et chloroplastique ne sont pas homogènes pour une même accession. Cela va nous poser problème car la taille de k-mer optimale pour l'assemblage par graphe de \hlrewrite{Bruijn}{De Bruijn} dépend de la couverture. On n'aura donc pas le même k-mer optimal pour les génomes mitochondrial et chloroplastique. Nous prendrons en compte cette disparité de couverture pour notre stratégie d'assemblage.
 
 \begin{comment}
 On visualise les alignements à l'aide du logiciel IGV. Sur la mitochondrie, on peut repérer visuellement de grands réarrangements.
@@ -762,7 +766,7 @@ Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple 
 
 
 
+\bibliography{biblio}{}
 \bibliographystyle{plain}
-\bibliography{biblio}
 
 \end{document}
