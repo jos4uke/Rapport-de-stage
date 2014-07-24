@@ -3,13 +3,13 @@ all: clean tocbibpdf
 tocbibpdf: main.tex
 	# generate toc
 	pdflatex main.tex; \
-	echo "toc: done"; \
+	#echo "toc: done"; \
 	# generate bib
 	bibtex main; \
-	echo "bib: done"; \
-	# generate toc + bib
-	#pdflatex main.tex; \
-	#echo "toc+bib: done"; \	
+	#echo "bib: done"; \
+	# generate pdf + bib
+	pdflatex main.tex; \
+	#echo "pdf+bib: done"; \	
 	# generate pdf with toc and bib
 	pdflatex main.tex; \
 	echo "pdf+toc+bib: done";
