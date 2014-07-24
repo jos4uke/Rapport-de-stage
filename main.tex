@@ -298,19 +298,9 @@ Pour MetaVelvet, nous avons procédé exactement de la même façon. La seule di
 
 La qualité des assemblages réalisés avec différents k est ensuite comparée à l'aide de Quast. Quast est un script Python qui va calculer les statistiques de chaque assemblage (N50, taille du plus grand contig etc.) et les présenter sous forme d'un rapport HTML pour une comparaison facile. On peut donc rapidement repérer la taille de k-mer qui semble produire le meilleur assemblage.
 
-\subsubsection{Choix des paramètres pour Bambus2}
-
-Bambus2 est une suite de scripts qui effectuent les différentes étapes du scaffolding. 
-
-On commence par créer des liens entre les contigs (clk) puis on rassemble ces liens entre une collection de bord possibles pour les contigs (Bundler). Bambus2 nous permet également de repérer les régions répétées du génome (MarkRepeats). On  utilise ces informations pour placer les contigs les uns par rapport aux autres et les orienter (OrientContigs). Les scaffolds obtenus sous forme de graphe sont ensuite linéarisés et enregistrés au format fasta.  
-
-Les deux étapes qui proposent des options intéressantes sont MarkRepeats et OrientContigs. 
-
-%il manque des choses ici
-
 \subsubsection{Choix des paramètres pour SGA}
 
-SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph et créent les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans}. 
+SGA propose un ensemble de programmes qui filtrent et trimment les reads, trouvent les recouvrements entre les reads, construisent le String Graph et créent les contigs. Pour effectuer ces étapes, on s'est fortement inspiré d'un des scripts bash proposés par les auteurs de SGA pour assembler le génome de \textit{C. Elegans}. %Le seul paramètre qu'on a changé est la longueur minimale de recouvrement entre deux reads, qu'on fixe à 2/3 de la longueur des reads (ie 100 pour des reads de 150 bases).
 
 Pour le scaffolding, on réaligne le jeu de données sur les contigs avec \textit{sga align} et on utilise le fichier BAM obtenu 1)
 pour avoir une liste des liens entre les contigs à l'aide du script Perl \textit{sga-bam2de} 2) pour calculer pour chaque contig la statistique de Myers avec le script Python \textit{sga-astat}. 
@@ -318,6 +308,20 @@ pour avoir une liste des liens entre les contigs à l'aide du script Perl \texti
 Cette statistique sera utilisé par \textit{sga scaffold} pour déterminer quels contigs correspondent à des répétitions : tous les contigs qui ont une statistique de Myers inférieure à un certain seuil sont considérés comme étant répétés. Pour déterminer le bon seuil, on compare les valeurs de la statistique de Myers pour les contigs chloroplastiques uniques et répétées (voir la structure du chloroplaste figure \ref{schemachloro}). On passe également à \textit{sga scaffold} les options \textit{--strict --remove-conflicting} pour avoir les scaffolds les plus conservatifs possibles. 
 
 \textit{sga scaffold} donne pour chaque scaffold, la liste des contigs qui le constituent et comment ils sont placés les uns par rapport aux autres. \textit{sga scaffold2fasta} utilise ce fichier pour écrire la séquence des scaffolds au format fasta. On se place dans le mode résolution par graphe ; avec l'option \textit{-g best-any}, on tente de résoudre les gaps entre les contigs en parcourant le graphe et en trouvant le chemin qui correspond le mieux aux distances estimées entre les contigs. 
+
+\subsubsection{Choix des paramètres pour Bambus2}
+
+Bambus2 est une suite de scripts qui effectuent les différentes étapes du scaffolding. 
+
+On commence par créer des liens entre les contigs (clk) puis on rassemble ces liens entre une collection de bord possibles pour les contigs (Bundler). Bambus2 nous permet également de repérer les régions répétées du génome (MarkRepeats). On  utilise ces informations pour placer les contigs les uns par rapport aux autres et les orienter (OrientContigs). Les scaffolds obtenus sous forme de graphe sont ensuite linéarisés et enregistrés au format fasta.  
+
+MarkRepeats utilise la statistique de Myers pour détecter les répétitions. Dans le code de MarkRepeats, la longueur maximale d'une répétition est fixée à 10 000 bases et la valeur de la statistique de Myers au-delà de laquelle un contig est considéré comme unique est fixée à 0.02. 
+
+Le fait qu'on ne puisse pas changer ces paramètres est très gênant car 1) la région répétée du chloroplaste fait plus de 10 000 bases 2) le seuil de la statistique de Myers doit être correctement fixé si on veut pouvoir détecter les répétitions. 
+
+Nous avons donc été contraints de modifier et recompiler le code de MarkRepeats pour transformer ces constantes en variables dont l'utilisateur peut fixer la valeur à l'aide des options \textit{-repeatMaxRepeatSize} et \textit{-repeatMaxRepeatCov}. 
+
+On a fixé la longueur maximale d'une répétition à 20 000 bases. Pour choisir le seuil de la statistique de Myers, on procède comme expliqué précédemment pour SGA : on calcule la statistique de Myers pour chaque contig avec \textit{sga-astats}. On sait quels contigs chloroplastiques sont uniques et lesquels sont répétés (voir section suivante). On prend un seuil qui va permettre à Bambus2 de les ranger dans la bonne catégorie. 
 
 \subsubsection{Evaluation de la qualité des assemblages obtenus}
 
@@ -352,16 +356,13 @@ La figure \ref{temoinchloro} met en évidence qu'une portion du chloroplaste de 
 \item un contig non chimérique qui mappe sur le chloroplaste de référence entre 0 et 85kb dans le sens direct (en rouge sur la figure \ref{schemachloro})
 \item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 85 et 110kb dans le sens direct et entre 128 et 154kb dans le sens inverse (en bleu sur la figure \ref{schemachloro})
 \item un contig non chimérique  qui mappe sur le chloroplaste de référence entre 110 et 128kb dans le sens direct (en vert sur la figure \ref{schemachloro})
-\item les jonctions entre les 3 contigs (arcs de cercle noirs sur la figure \ref{schemachloro})
 \end{itemize}
 
 Le contiguer ne sait pas que la région représentée en bleue est une région répétée. Il voit seulement qu'à ses extrémités existe plusieurs possibilités. Par exemple, l'extrémité bleu foncé de la région répétée est reliée aux deux extremités de la région unique rouge. Le contiguer ne doit pas faire un choix et fusionner les contigs bleu et rouge dans un sens ou dans l'autre. Il doit les garder séparés. 
 
-Le scaffolder, en revanche, doit pouvoir détecter les régions répétées et résoudre les répétitions. 
+Le scaffolder, en revanche, détecte les régions répétées et est censé les résoudre en théorie. En pratique, il est très difficile de résoudre de grandes inversions-répétitions comme celle qui se trouve sur le chloroplaste sans plusieurs librairies possédant des tailles d'inserts différentes. On s'estimera donc satisfait si les parties uniques du chloroplaste ont été correctement assemblées.
 
-\textbf{Après scaffolding}, on doit donc avoir un unique scaffold non chimérique qui recouvre la totalité du chloroplaste de référence et présente la même inversion-répétition. 
-
-En alignant nos scaffolds contre le chloroplaste de référence avec Nucmer, on doit retrouver la figure \ref{temoinchloro}. \\
+\textbf{Après scaffolding}, on doit donc avoir deux scaffolds non chimériques correspondant à la grande et la petite région unique du chloroplaste. \\
 
 \textbf{Pour la mitochondrie, on ne sait pas précisément ce qu'on doit obtenir.} En raison des nombreux réarrangements qu'elles ont subis, les mitochondries des 10 accessions naturelles vont être très différentes. \cite{arrieta2009diversity} Si on retrouve le même contig mitochondrial chez 9 accessions sur 10, cela ne signifie pas que l'assemblage de la dixième accession est mauvais. On peut néanmoins effectuer plusieurs tests afin de savoir si notre assemblage mitochondrial est plausible ou pas. 
 
@@ -382,7 +383,7 @@ ContigLink prend en entrée l'alignement au format bam des données brutes sur l
 \item pour chaque pair de contigs, le nombre de "bonnes" et mauvaises" paires supportant un lien entre ces contigs.
 \end{itemize}
 
-Cette dernière information est très utile pour comprendre comment Bambus2 et sga scaffold vont relier les contigs entre eux pour former des scaffolds. 
+On utilisera également ContigLink après le scaffolding pour déterminer s'ils existent des pairs qui supportent des liens entre les scaffolds. 
 
 \section{Résultats}
 
@@ -553,7 +554,7 @@ On trouve une taille de k-mer optimale de 79. L'assemblage a alors 38 contigs d'
 
 Avec Nucmer, on compare les contigs obtenus pour une taille de k-mer de 79 avec le chloroplaste de référence et la mitochondrie de référence. Le plus grand contig de l'assemblage est un contig chimérique. Il s'agit d'un contig chloroplastique qui contient trois grands morceaux d'ADN mitochondrial (de taille 13, 17 et 18kb). Chez la référence, il existe des insertions d'ADN mitochondrial dans le chloroplaste  mais ces insertions sont de petite taille (inférieure à 1kb). Plusieurs grandes insertions d'ADN mitochondrial dans le chloroplaste ont plus de chance de correspondre à un mauvais assemblage qu'à une différence entre les chloroplaste des accessions. 
 
-Pour s'en assurer, on regarde l'assemblage pour k=83, le deuxième meilleur assemblage d'après ses statistiques. Son contig le plus long fait 128kb. Il n'est pas chimérique.
+Pour s'en assurer, on regarde l'assemblage pour k=83\label{Velvet_norm}, le deuxième meilleur assemblage d'après ses statistiques. Son contig le plus long fait 128kb. Il n'est pas chimérique.
 
 \begin{figure}[H]
 \centerfloat
@@ -572,7 +573,7 @@ Nous avons testé différents niveaux de normalisation et de filtration mais nou
 
 Nous avons assemblés plusieurs jeux de données ré-échantillonés (qui ne contiennent que la moitié, le tiers, le quart des données etc.) mais les meilleurs résultats ont été obtenus pour les données brutes simplement filtrées à 10X afin de retirer la contamination nucléaire. Nous les présentons ici. 
 
-On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
+On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. \label{MV_brut}
 
 \begin{figure}[H]
 \centerfloat
@@ -714,9 +715,96 @@ Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple 
 
 En revanche, si on visualise l'alignement des données brutes sur ce contig mal formé à l'aide d'IGV, on voit bien qu'on a, à 110 et 128kb, des colonnes de reads dont le compagnon mappe sur le même contig avec une taille d'insert incohérente. Ce qui compte n'est donc pas pas la proportion des "mauvaises" paires par rapport aux "bonnes" mais la localisation des reads de ces "mauvaises" paires. S'ils sont concentrés en un point précis, le contig doit être cassé à cette endroit ; il est donc mal formé. Malheureusement, on ne peut pas visualiser sous IGV tous les contigs. 
 
+\subsubsection{Assemblage avec SGA}
+\hspace{1cm}  \textbf{\small Exemple pour Cvi-0 normalisé à 20X et filtré à 10X}\\
+
+\label{sga} En sortie de la phase de contigage, on a un assemblage contenant 65 contigs de plus de 500 bases et dont le N50 est de 13kb. Le contig le plus long fait 46kb. 
+
+Si on réalise le dotplot des contigs contre le chloroplaste de référence, on constate que la longue région unique, la région répétée et la petite région unique du chloroplaste sont bien distinctes même si elles ont été fractionnées en plusieurs contigs. 
+
+On vérifie que la mitochondrie de référence est bien couverte entièrement par certains de nos contigs et que les contigs s'alignant sur la mitochondrie et le chloroplaste de référence ont des couvertures cohérentes.
+
+On peut donc passer à l'étape de scaffolding. On obtient un assemblage final contenant 12 scaffolds, dont le plus long fait 85kb. Le N50 est de 26kb. 
+
+\begin{figure}[H]
+\centerfloat
+
+\subfloat[Dotplot des scaffolds contre le chloroplaste de référence]{
+   \includegraphics[scale=0.3] {Assemblage/chloro_sga.png}
+   \label{sga:1}
+ } \hspace{5mm}
+\subfloat[Dotplot des scaffolds contre la mitochondrie de référence]{
+   \includegraphics[scale=0.3] {Assemblage/mito_sga.png}
+   \label{sga:2}
+ }
+
+\label{sha}
+\caption{Comparaison entre les scaffolds obtenus et la référence. }
+\end{figure}
+
+Sur le graphe de ressemblance \ref{sga:1}, on voit qu'on a deux scaffolds correspondant aux deux régions uniques du chloroplaste. Les contigs correspondant à la région répétée ont été marqués comme étant des répétitions et écartés de l'assemblage par \textit{sga scaffold}. Pour la même raison, on a sur le graphe \ref{sga:2} des scaffolds qui correspondent aux régions uniques de la mitochondrie avec des gaps qui doivent correspondre aux régions répétées. 
+
+
+\begin{figure}[H]
+\centerfloat
+
+\subfloat[Les scaffolds chloroplastiques]{
+\begin{tabular}{|l|c|c|c|}
+\hline
+  & Nom & Taille (bp) & Couverture (X) \\
+\hline
+Longue région unique & Scaffold 2 &  84409 & 575 \\
+\hline
+Petite région unique & Scaffold 10 & 18079 & 600 \\
+\hline
+\end{tabular}
+
+\label{scaf:1}
+ } \hspace{5mm}
+\subfloat[Les scaffolds mitochondriaux]{
+\begin{tabular}{|c|c|c|}
+\hline
+Nom & Taille (bp) & Couverture (X) \\
+\hline
+Scaffold 0 & 14296 & 72 \\
+\hline
+Scaffold 1 & 18583 & 61 \\
+\hline
+Scaffold 3 & 11840 & 70\\
+\hline
+Scaffold 4 & 26808 & 64 \\
+\hline
+Scaffold 5 & 29698 & 62 \\
+\hline
+Scaffold 6 & 26539 & 63 \\
+\hline
+Scaffold 7 & 13731 & 69 \\
+\hline
+Scaffold 8 & 17754 & 64 \\
+\hline
+Scaffold 9 & 11367 & 69\\
+\hline
+Scaffold 11 & 20844 & 70 \\
+\hline
+\end{tabular}
+
+\label{scaf:2}
+ }
+
+\label{scaf}
+\caption{Tous les scaffolds s'alignent soit sur le chloroplaste, soit sur la mitochondrie de référence. Ils ont des couvertures proches des valeurs attendues (autour de 60X pour la mitochondrie et de 560X pour le chloroplaste)}
+\end{figure}
+
+On réaligne les données brutes sur les scaffolds et on vérifie que les couvertures des scaffolds sont cohérentes (voir tables \ref{scaf:1} et \ref{scaf:2}). Puis, on visualise les alignements pour chaque scaffold avec IGV. On ne repère pas d'endroit précis où des reads dont les compagnons mappent avec des mauvaises tailles d'insert s'accumulent. Il semblerait que les scaffolds soient bien formés. 
+
+%Avec ContigLink, on peut voir qu'aucune "bonne" paire de reads ne supporte de liens entre les scaffolds. 
+
 \subsubsection{Scaffolding avec Bambus2}
 
-\subsubsection{Assemblage avec SGA}
+On scaffolde les contigs obtenus avec MetaVelvet et décrits en détail à la section \ref{MV_brut}.
+
+On obtient un assemblage final qui comporte 28 scaffolds, dont le plus long fait 85kb. Le N50 est de 62kb. 
+
  
 \section{Discussion}
 
@@ -736,9 +824,16 @@ Lorsqu'on assemble les données brutes avec MetaVelvet, le premier round de Pebb
 
 Comme on l'a dit précédemment, Pebble connecte uniquement des noeuds \textbf{uniques}. Or, pour les données normalisées, il fusionne le contig qui correspond à la région répétée du chloroplaste avec les contigs correspondant aux deux régions uniques. Cela signifie que le contig de la région répétée est considéré par Velvet comme étant unique.
 
-Pour distinguer les noeuds uniques des noeuds répétés, Velvet, comme Bambus2 et SGA, utilise la statistique de Myers. 
+Pour distinguer les noeuds uniques des noeuds répétés, Velvet, comme Bambus2 et SGA, calcule la statistique de Myers pour chaque noeud. Il considère que tous les noeuds dont la statistique de Myers est supérieure à 5 sont uniques. \cite{velvetcode}
 
-\subsection{Un scaffolder sachant scaffolder ne scaffolde jamais sans ses liens}
+Malheureusement, Velvet n'écrit pas les résultats de ses calculs dans un fichier. On a donc essayé de répliquer le comportement de Velvet en utilisant le script \textit{sga-astat} pour calculer nous-même la statistique de Myers pour chaque noeud. 
+
+Bien que cette approche soit discutable (on n'est pas sûr que \textit{sga-astat} et Velvet fasse exactement le même calcul), elle donne quand même des résultats intéressants. En effet, on trouve que la statistique de Myers du contig chloroplastique répétée se trouve entre celles des deux contigs chloroplastiques uniques. Or, les contigs répétés doivent forcément avoir une statistique de Myers inférieure à celle des contigs uniques. Si ce n'est pas le cas, on ne peut pas utiliser la statistique de Myers pour distinguer les contigs répétés des contigs uniques. 
+
+
+
+
+\subsection{Comparaison entre les scaffolders}
 
 \subsection{Comparaison entre les accessions}
 
