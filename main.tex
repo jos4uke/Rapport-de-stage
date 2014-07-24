@@ -311,7 +311,7 @@ Pour l'assemblage classique, nous avons utilisé Velvet et SGA. En effet, ces de
 
 Notre assembleur de métagénome sera MetaVelvet. 
 
-\hlcomment{A noter que Velvet et MetaVelvet n'ont assuré que la partie contiguage de l'assemblage}{À numancer au vu de tes récents tests qui semble indiquer que pebble intervient dans le scaffolding meme quand il est explicitement non dema,dé à Velvet\dots}. La partie scaffolding a été effectuée par Bambus2. Pour SGA, nous avons utilisé son scaffolder intégré (sga scaffold). 
+\hlcomment{A noter que Velvet et MetaVelvet n'ont assuré que la partie contiguage de l'assemblage}{À nuancer au vu de tes récents tests qui semble indiquer que pebble intervient dans le scaffolding meme quand il est explicitement non dema,dé à Velvet\dots}. La partie scaffolding a été effectuée par Bambus2. Pour SGA, nous avons utilisé son scaffolder intégré (sga scaffold). 
 
 \subsubsection{Choix des paramètres pour Velvet et MetaVelvet}
 
@@ -438,7 +438,7 @@ Cette dernière information est très utile pour comprendre comment Bambus2 et s
 
 La qualité de nos reads était excellente à la base : elle n'est donc que légèrement améliorée par le trimming. 
 
-La quasi-totalité des séquences ont conservé après trimming une taille proche de leur taille initiale  (autour de 100 bases pour Shahdara et Kz-9 et de 150 bases pour les autres accessions). 
+La quasi-totalité des séquences ont \hladd{été} conservé après trimming une taille proche de leur taille initiale  (autour de 100 bases pour Shahdara et Kz-9 et de 150 bases pour les autres accessions). 
 
 Le taux de duplication de nos libraries est considéré comme trop élevé par fastqc. Cependant, comme notre librarie contient contient des données mitochondriales, où les séquences répétées sont fréquentes, nous n'avons pas à nous alarmer de ce résultat. 
 
@@ -462,20 +462,21 @@ Blh-1 & 8.08 & 64.26 & 15.26 & 12.40 \\
   Sha & 19.35 & 33.42 & 32.85 & 14.37 \\ 
   \hline
 \end{tabular}
-\caption{Pourcentage de reads mappés et non mappés pour les 10 accessions (référence sans chromosome 2)}
+\caption{Pourçentage de reads mappées et non mappées pour les 10 accessions (référence sans chromosome 2)}
 \end{table}
+\todo{corrigé mappés par mappées}
 
-Nous observons d'abord un pourcentage non négligeable de reads non mappés - jusqu'à 32\% pour l'accession Ct-1. 
+Nous observons d'abord un pourcentage non négligeable de reads non \hlrewrite{mappés}{mappées} - jusqu'à 32\% pour l'accession Ct-1. 
 
-Certains reads non mappés appartiennent au chromosome 2 hors insertions mitochondriales. Comme le chromosome 2 est entièrement masqué, ils ne peuvent s'aligner nulle part. 
+\hlrewrite{Certains}{Certaines} reads non \hlrewrite{mappés}{mappées} appartiennent au chromosome 2 hors insertions mitochondriales. Comme le chromosome 2 est entièrement masqué, \hlrewrite{ils}{elles} ne peuvent s'aligner nulle part. 
 
-D'autres correspondent à des régions où la variabilité entre l'accession étudiée et la référence dépasse le seuil fixé. On rappelle qu'avec les paramètres qu'on a fixé, pour qu'un read s'aligne à la référence, ils doivent être séparés par moins de deux événements indépendants. Or, on a trouvé dans certains reads non mappés jusqu'à 7 SNPs de différence par rapport à la référence. 
+D'autres correspondent à des régions où la variabilité entre l'accession étudiée et la référence dépasse le seuil fixé. On rappelle qu'avec les paramètres qu'on a fixé, pour qu'une read s'aligne à la référence, \hlrewrite{ils}{elles} doivent être \hlrewrite{séparés}{séparées} par moins de deux événements indépendants. Or, on a trouvé dans \hlrewrite{certains}{certaines} reads non \hlrewrite{mappés}{mappées} jusqu'à 7 SNPs de différence par rapport à la référence.\todo[inline]{En fait il faut regarder la paire, bwa peut sauver la mate avec un nombre d'événements indépendants supérieurs à la limite qu'on autorise si la read mappe en respectant les contraintes} 
 
-Enfin, les autres reads non mappés ont une faible complexité et correspondent probablement à des régions répétées. \\
+Enfin, les autres reads non \hlrewrite{mappés}{mappées} ont une faible complexité et correspondent probablement à des régions répétées. \\
 
-A partir du nombre de reads mappés sur chaque génome, on peut avoir une estimation de la couverture par une formule très simple : 
+A partir du nombre de reads \hlrewrite{mappés}{mappées} sur chaque génome, on peut avoir une estimation de la couverture par une formule très simple : 
 
-couverture $\approx$ nombre de reads mappés X taille des reads / taille du génome
+couverture $\approx$ nombre de reads \hlrewrite{mappés}{mappées} X taille des reads / taille du génome
 
 \begin{table}[!ht]
 \centering
@@ -543,13 +544,15 @@ La figure \ref{normfilt:1} illustre l'effet de la normalisation sans filtration.
 
 La figure \ref{normfilt:2} met en évidence l'effet de différents niveaux de filtration. Nous avions commencé avec un seuil de filtration de 3X afin d'éliminer le noyau, dont la couverture est de 1.3X environ pour Cvi-0. Cependant, après assemblage de notre jeu de données normalisé et filtré, la plupart des contigs obtenus étaient faiblement couverts et s'alignaient sur le noyau. Un seuil de filtration faible est donc insuffisant pour éliminer la majorité des reads du noyau. 
 
-Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtration (jusqu'à 15X pour des données normalisées à 30X!). Néanmoins, comme le montre la figure \ref{normfilt:2}, de telles valeurs du seuil de normalisation ne dégradent pas la qualité du jeu de données. 
+Nous avons testé des valeurs de plus en plus grandes pour le seuil de filtration (jusqu'à 15X pour des données normalisées à 30X!). Néanmoins, comme le montre la figure \ref{normfilt:2}, de telles valeurs du seuil de \hlrewrite{normalisation}{filtration} ne dégradent pas la qualité du jeu de données. 
 
 
 \begin{figure}[!ht]
+\todo[inline]{normfilt:1 1) corrigé 150 par 250; 2) en fait, on a 20 de couverture moyenne, mais il est possible qu'il y ait des pics à 50 ou plus, et inversement des trous de couverture à 10 ou moins, sans doute plus rares}
+\todo[inline]{normfilt:2 Je dirais plutôt que le pic centré sur 20 n'est pas modifié quelque soit le jeu de données}
 \centering
 
-\subfloat[Avant normalisation, on constate 2 pics, situés autour de 20 et 250 sur l'axe des abscisses. Cela signifie qu'on trouve dans notre jeu de données un grand nombre de 25-mers qui apparaissent autour de 20 fois et de 150 fois. Ce sont probablement des 25-mers qui appartiennent à la mitochondrie et au chloroplaste respectivement. Après normalisation, nous n'avons plus qu'un seul pic à 20 sur l'axe des abscisses. Les 25-mers mitochondriaux et chloroplastiques apparaissent donc désormais en moyenne 20 fois dans le jeu de données normalisé. Les couvertures de la mitochondrie et du chloroplaste ont été homogéinisées.]{
+\subfloat[Avant normalisation, on constate 2 pics, situés autour de 20 et 250 sur l'axe des abscisses. Cela signifie qu'on trouve dans notre jeu de données un grand nombre de 25-mers qui apparaissent autour de 20 fois et de 250 fois. Ce sont probablement des 25-mers qui appartiennent à la mitochondrie et au chloroplaste respectivement. Après normalisation, nous n'avons plus qu'un seul pic à 20 sur l'axe des abscisses. Les 25-mers mitochondriaux et chloroplastiques apparaissent donc désormais en moyenne 20 fois dans le jeu de données normalisé. Les couvertures de la mitochondrie et du chloroplaste ont été homogéinisées.]{
    \includegraphics[scale=0.5] {Reduction/norm.png}
    \label{normfilt:1}
  } 
@@ -586,6 +589,7 @@ Avec Nucmer, on compare les contigs obtenus pour une taille de k-mer de 79 avec 
 Pour s'en assurer, on regarde l'assemblage pour k=83, le deuxième meilleur assemblage d'après ses statistiques. Son contig le plus long fait 128kb. Il n'est pas chimérique.
 
 \begin{figure}[!ht]
+	\todo[inline]{chloro83: préciser l'assembleur utilisé, les principaux paramètres}
 \centerfloat
 \includegraphics[scale=0.7] {Assemblage/chloro_83.png}
 \caption{Graphe de ressemblance entre le plus grand contig obtenu pour k=83 (en ordonnée) et le chloroplaste de référence (en abscisse)\\
@@ -593,7 +597,7 @@ Nous n'avons pas représenté les autres contigs afin de ne pas surcharger la fi
 \label{chloro_83}
 \end{figure}
 
-Sur la figure \ref{chloro_83}, on voit que le plus grand contig de l'assemblage s'aligne au chloroplaste de référence dans le sens direct de 0 à 110kb puis dans le sens inverse de 110 à 128kb. Il contient donc la longue région unique du chloroplaste, la première copie de sa région inversée-répétée et la petite région unique du chloroplaste dans le sens inverse (en rouge, bleu et vert sur la figure \ref{schemachloro}). Les trois régions du chloroplaste, qui auraient dû rester distinctes, ont été fusionnées en un seul contig par Velvet. Cet assemblage n'est donc pas bon.
+Sur la figure \ref{chloro_83}, on voit que le plus grand contig de l'assemblage s'aligne au chloroplaste de référence dans le sens direct de 0 à 110kb puis dans le sens inverse de 110 à 128kb. Il contient donc la longue région unique du chloroplaste, la première copie de sa région inversée-répétée et la petite région unique du chloroplaste dans le sens inverse (en rouge, bleu et vert sur la figure \ref{schemachloro}). Les trois régions du chloroplaste, qui auraient dû rester distinctes, ont été fusionnées en un seul contig par Velvet. Cet assemblage n'est donc pas bon.\todo[inline]{tu peux déjà mentionner que velvet procede a une étape de scaffolding avec pebble et que tu vas développer l'explication dans la discussion.}
 
 Nous avons testé différents niveaux de normalisation et de filtration mais nous n'avons jamais réussi à obtenir les 3 contigs chloroplastiques attendus. 
 
@@ -605,6 +609,7 @@ Nous avons assemblés plusieurs jeux de données ré-échantillonés (qui ne con
 On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
 
 \begin{figure}[!ht]
+	\todo[inline]{mv: idem dans la légende, préciser l'assembleur utilisé et les principaux paramètres}
 \centerfloat
 
 \subfloat[Graphe de ressemblance entre le chloroplaste de référence (en abscisse) et les contigs obtenus (en ordonnée)]{
@@ -620,7 +625,7 @@ On effectue la recherche de la taille de k-mer optimale comme précédemment. On
 \caption{Comparaison entre les contigs obtenus et la référence. Tous les contigs ne figurent pas.}
 \end{figure}
 
-En figure \ref{mv:1}, on voit qu'on retrouve dans notre assemblage la longue région unique, la région répétée et la petite région unique du chloroplaste. Ces trois régions correspondent à différents contigs et sont donc bien distinctes. On n'a cependant pas 3 contigs différents mais 5 (la petite région unique et la région répétée sont chacune séparée en deux contigs). 
+En figure \ref{mv:1}, on voit qu'on retrouve dans notre assemblage la longue région unique, la région répétée et la petite région unique du chloroplaste. Ces trois régions correspondent à différents contigs et sont \hlremove{donc}\todo[inline]{il vaut mieux constater le résultat, meilleur que dans le cas de velvet, et ne pas conclure sur autre chose que l'efficacité de l'assembleur. Tu le mentionneras sans doute dans la discussion} bien distinctes. On n'a cependant pas 3 contigs différents mais 5 (la petite région unique et la région répétée sont chacune séparée en deux contigs). 
 La figure \ref{mv:2} nous montre qu'on a également dans notre assemblage des contigs qui recouvrent entièrement la mitochondrie de référence. 
 
 \begin{figure}[!ht]
@@ -685,9 +690,9 @@ Noeud 6544 & 335 & 66 \\
 
 On réaligne les données brutes sur les contigs. On voit que de nombreux contigs présent sur les graphes de ressemblances \ref{mv:1} et \ref{mv:2} possèdent bien la couverture attendue : environ 60X pour la mitochondrie et 560X pour le chloroplaste (le double pour sa région répétée). La liste de ces contigs est donnée dans les tables \ref{contig:1} et \ref{contig:2}. 
 
-Cependant, on trouve également de nombreux contigs qui ne passent pas l'étape de consistence interne. Il s'agit : 
+Cependant, on trouve également de nombreux contigs qui ne passent pas l'étape de \hlrewrite{consistence}{consistance} interne. Il s'agit : 
 \begin{enumerate}
-\item de contigs qui s'alignent sur le noyau de l'accession de référence d'après nucmer ou Blast mais sont extrêmement couverts par les reads bruts 
+	\item de contigs qui s'alignent sur le noyau de l'accession de référence d'après nucmer ou Blast mais sont extrêmement couverts par les reads \hlrewrite{bruts}{brutes} 
 
 D'après des recherches dans Blast, ces contigs correspondent à des unités répétées d'ADN ribosomique, d'où leur forte couverture.
 
@@ -698,6 +703,7 @@ Trois contigs apparaissent plusieurs fois dans le génome mitochondrial de C24 d
 A l'opposé, on a également trois petits contigs qui s'alignent sur la mitochondrie de référence mais dont la couverture est pratiquement nulle. Ces petits contigs, présents chez la mitochondrie de C24, ont peut-être été supprimés du génome mitochondrial de Cvi-0.
 
 \begin{figure}[!ht]
+\todo[inline]{inc:2 C'est bizarre, ou bien j'ai mal compris, mais l'hypothèse la plus simple serait peut-etre de considérer que ces contigs sont associés au noyau, Chrm2, vu les niveaux de couverture, contamination qui n'auraient pas pu être éliminés ni par la normalisation/filtration ni par l'assemblage. }
 \centerfloat
 
 \subfloat[Des contigs possiblement répetées]{
@@ -738,9 +744,9 @@ Il existe également des séquences chloroplastiques dont la couverture est trop
 
 \end{enumerate}
 
-Nous avons essayé d'utiliser ContigLink pour répérer les contigs mal formés mais sans succès. En effet, si on considère un contig qu'on sait être bien formé, par exemple le noeud 1379 correspondant à la longue région unique du chloroplaste (voir table \ref{contig:1}), on voit que 3629 paires s'alignent sur ce contig avec une bonne taille d'insert et 72692 avec une mauvaise taille d'insert, ce qui représente un ration "mauvaises paires"/"bonnes paires" de 0.05. 
+Nous avons essayé d'utiliser ContigLink pour répérer les contigs mal formés mais sans succès. En effet, si on considère un contig qu'on sait être bien formé, par exemple le noeud 1379 correspondant à la longue région unique du chloroplaste (voir table \ref{contig:1}), on voit que 3629 paires s'alignent sur ce contig avec une bonne taille d'insert et 72692 avec une mauvaise taille d'insert, ce qui représente un \hlrewrite{ration}{ratio} "mauvaises paires"/"bonnes paires" de 0.05. 
 
-Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple l'unique contig chloroplastique trouvé par Velvet à la section précédente, on voit que ce mauvais contig est supporté par 7413 "mauvaises paires" pour 132255 "bonnes paires" d'où un ratio de 0.06. On ne peut donc pas utiliser le nombre de paires s'alignant sur un contig avec une taille d'insert incohérente pour distinguer les bons et les mauvais contigs. 
+\hlcomment{Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple l'unique contig chloroplastique trouvé par Velvet à la section précédente, on voit que ce mauvais contig est supporté par 7413 "mauvaises paires" pour 132255 "bonnes paires" d'où un ratio de 0.06. On ne peut donc pas utiliser le nombre de paires s'alignant sur un contig avec une taille d'insert incohérente pour distinguer les bons et les mauvais contigs.}{Je dirais que le ratio n'est pas assez informatif en soi et pour être discriminant, il faudrait regarder la localisation/dispersion des paires afin de statuer sur la qualité de l'assemblage des contigs.} 
 
 \subsubsection{Scaffolding avec Bambus2}
 
@@ -764,8 +770,7 @@ Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple 
 
 
 
-
-
+\clearpage
 \bibliography{biblio}{}
 \bibliographystyle{plain}
 
