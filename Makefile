@@ -16,7 +16,7 @@ tocbibpdf: main.tex
 
 clean_toc:
 	# main.aux  main.log  main.out  main.pdf  main.tdo  main.tex  main.toc
-	for ext in aux log pdf; do \
+	for ext in tdo toc; do \
 		if [ -e main.$$ext ]; \
 		then \
 	   		rm main.$$ext; \
