@@ -712,6 +712,8 @@ Nous avons essayé d'utiliser ContigLink pour répérer les contigs mal formés 
 
 Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple l'unique contig chloroplastique trouvé par Velvet à la section précédente, on voit que ce mauvais contig est supporté par 7413 "mauvaises paires" pour 132255 "bonnes paires" d'où un ratio de 0.06. On ne peut donc pas utiliser le nombre de paires s'alignant sur un contig avec une taille d'insert incohérente pour distinguer les bons et les mauvais contigs. 
 
+En revanche, si on visualise l'alignement des données brutes sur ce contig mal formé à l'aide d'IGV, on voit bien qu'on a, à 110 et 128kb, des colonnes de reads dont le compagnon mappe sur le même contig avec une taille d'insert incohérente. Ce qui compte n'est donc pas pas la proportion des "mauvaises" paires par rapport aux "bonnes" mais la localisation des reads de ces "mauvaises" paires. S'ils sont concentrés en un point précis, le contig doit être cassé à cette endroit ; il est donc mal formé. Malheureusement, on ne peut pas visualiser sous IGV tous les contigs. 
+
 \subsubsection{Scaffolding avec Bambus2}
 
 \subsubsection{Assemblage avec SGA}
@@ -720,10 +722,21 @@ Or, si on étudie maintenant un contig qu'on sait être mal formé, par exemple 
 
 \subsection{Comparaison entre les assembleurs}
 
+Nous avons essayé de comprendre pourquoi Velvet ne nous donne jamais les trois régions distinctes du chloroplaste pour les données normalisées. 
 
+Nous avons remarqué que, même lorsqu'on demande à Velvet ou MetaVelvet de ne pas scaffolder (avec l'option \textit{-scaffolding no}), Velvet/MetaVelvet lance tout de même Pebble, son module de scaffolding. Pebble connecte les contigs uniques en utilisant les informations apportées par les reads pairés. 
 
+Comme dans la section \ref{Velvet_norm}, on utilise Velvet pour assembler les données de Cvi-0 normalisées à 20X et filtrées à 10X pour k=83 mais, cette fois,  en désactivant complètement Pebble (on dit à Velvet que nos données pairées ne le sont pas). 
 
+On obtient un assemblage où les trois régions du chloroplaste sont parfaitement distinctes et représentées chacune par un contig. Cependant, les statistiques de l'assemblage se sont considérablement dégradées. Le N50 est passé de 37kb à 16kb. Le nombre de contigs d'au moins 500 bases est passé de 35 à 55. 
 
+On en déduit que, même lorsqu'on lui demande de ne pas scaffolder, Velvet exploite les informations sur les paires si elles sont présentes en utilisant Pebble pour fusionner certaines contigs. Ce premier round de Pebble donne globalement un meilleur assemblage mais il arrive que Pebble fasse des erreurs comme c'est le cas ici pour le chloroplaste. 
+
+Lorsqu'on assemble les données brutes avec MetaVelvet, le premier round de Pebble est également lancé sur chacun des sous-graphes de MetaVelvet. Pourtant, comme nous l'avons vu à la section \ref{MV_brut}, les trois régions du chloroplaste sont distinctes. Donc, Pebble commet l'erreur de relier les trois régions du chloroplaste uniquement pour les données normalisées mais pas pour les données brutes. 
+
+Comme on l'a dit précédemment, Pebble connecte uniquement des noeuds \textbf{uniques}. Or, pour les données normalisées, il fusionne le contig qui correspond à la région répétée du chloroplaste avec les contigs correspondant aux deux régions uniques. Cela signifie que le contig de la région répétée est considéré par Velvet comme étant unique.
+
+Pour distinguer les noeuds uniques des noeuds répétés, Velvet, comme Bambus2 et SGA, utilise la statistique de Myers. 
 
 \subsection{Un scaffolder sachant scaffolder ne scaffolde jamais sans ses liens}
 
