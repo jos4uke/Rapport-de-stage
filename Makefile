@@ -23,9 +23,18 @@ clean_toc:
 		fi; \
 	done
 
-clean: 
+clean_bib:
+	# main.bbl main.blg
+	for ext in bbl blg; do \
+		if [ -e main.$$ext ]; \
+		then \
+            rm main.$$ext; \
+        fi; \
+    done
+
+clean: clean_toc clean_bib
 	# main.aux  main.log  main.out  main.pdf  main.tdo  main.tex  main.toc 
-	for ext in aux log out pdf tdo toc; do \
+	for ext in aux log out pdf; do \
         if [ -e main.$$ext ]; \
         then \
             rm main.$$ext; \
