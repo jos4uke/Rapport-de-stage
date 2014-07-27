@@ -580,9 +580,9 @@ On assemble pour des tailles de k-mer comprises entre 61 et 91, par pas de 10.
 \label{quast}
 \end{figure}
 
-L'assemblage qui a le plus petit nombre de contigs et le plus grand N50 est l'assemblage réalisé avec k=81. La taille de k-mer optimale va donc se situer autour de 81. On assemble à nouveau le jeu de donnée pour des tailles de k-mer comprises entre 75 et 85, par pas de 2.
+L'assemblage qui a le plus petit nombre de contigs et la plus grande N50 est l'assemblage réalisé avec k=81. La taille de k-mer optimale va donc se situer autour de 81. On assemble à nouveau le jeu de donnée pour des tailles de k-mer comprises entre 75 et 85, par pas de 2.
 
-On trouve une taille de k-mer optimale de 79. L'assemblage a alors 38 contigs d'au moins 500 bases et un N50 de 39kb. Le contig le plus long a une taille de 149kb. 
+On trouve une taille de k-mer optimale de 79. L'assemblage a alors 38 contigs d'au moins 500 bases et une N50 de 39kb. Le contig le plus long a une taille de 149kb. 
 
 Avec Nucmer, on compare les contigs obtenus pour une taille de k-mer de 79 avec le chloroplaste de référence et la mitochondrie de référence. Le plus grand contig de l'assemblage est un contig chimérique. Il s'agit d'un contig chloroplastique qui contient trois grands morceaux d'ADN mitochondrial (de taille 13, 17 et 18kb). Chez la référence, il existe des insertions d'ADN mitochondrial dans le chloroplaste  mais ces insertions sont de petite taille (inférieure à 1kb). Plusieurs grandes insertions d'ADN mitochondrial dans le chloroplaste ont plus de chance de correspondre à un mauvais assemblage qu'à une différence entre les chloroplaste des accessions. 
 
@@ -606,7 +606,7 @@ Nous avons testé différents niveaux de normalisation et de filtration mais nou
 
 Nous avons assemblés plusieurs jeux de données ré-échantillonés (qui ne contiennent que la moitié, le tiers, le quart des données etc.) mais les meilleurs résultats ont été obtenus pour les données brutes simplement filtrées à 10X afin de retirer la contamination nucléaire. Nous les présentons ici. 
 
-On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. Le N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
+On effectue la recherche de la taille de k-mer optimale comme précédemment. On choisit k=71. La N50 est alors de 44kb. Il y a 90 contigs d'au moins 500 bases et le contig le plus long fait 85kb. 
 
 \begin{figure}[!ht]
 	\todo[inline]{mv: idem dans la légende, préciser l'assembleur utilisé et les principaux paramètres}
@@ -753,13 +753,13 @@ En revanche, si on visualise l'alignement des données brutes sur ce contig mal 
 \subsubsection{Assemblage avec SGA}
 \hspace{1cm}  \textbf{\small Exemple pour Cvi-0 normalisé à 20X et filtré à 10X}\\
 
-\label{sga} En sortie de la phase de contigage, on a un assemblage contenant 65 contigs de plus de 500 bases et dont le N50 est de 13kb. Le contig le plus long fait 46kb. 
+\label{sga} En sortie de la phase de contigage, on a un assemblage contenant 65 contigs de plus de 500 bases et dont la N50 est de 13kb. Le contig le plus long fait 46kb. 
 
 Si on réalise le dotplot des contigs contre le chloroplaste de référence, on constate que la longue région unique, la région répétée et la petite région unique du chloroplaste sont bien distinctes même si elles ont été fractionnées en plusieurs contigs. 
 
 On vérifie que la mitochondrie de référence est bien couverte entièrement par certains de nos contigs et que les contigs s'alignant sur la mitochondrie et le chloroplaste de référence ont des couvertures cohérentes.
 
-On peut donc passer à l'étape de scaffolding. On obtient un assemblage final contenant 12 scaffolds, dont le plus long fait 85kb. Le N50 est de 26kb. 
+On peut donc passer à l'étape de scaffolding. On obtient un assemblage final contenant 12 scaffolds, dont le plus long fait 85kb. La N50 est de 26kb. 
 
 \begin{figure}[H]
 \centerfloat
@@ -838,7 +838,7 @@ On réaligne les données brutes sur les scaffolds et on vérifie que les couver
 
 On scaffolde les contigs obtenus avec MetaVelvet et décrits en détail à la section \ref{MV_brut}.
 
-On obtient un assemblage final qui comporte 28 scaffolds, dont le plus long fait 85kb. Le N50 est de 62kb. 
+On obtient un assemblage final qui comporte 28 scaffolds, dont le plus long fait 85kb. La N50 est de 62kb. 
 
  
 \section{Discussion}
@@ -851,7 +851,7 @@ Nous avons remarqué que, même lorsqu'on demande à Velvet ou MetaVelvet de ne 
 
 Comme dans la section \ref{Velvet_norm}, on utilise Velvet pour assembler les données de Cvi-0 normalisées à 20X et filtrées à 10X pour k=83 mais, cette fois,  en désactivant complètement Pebble (on dit à Velvet que nos données pairées ne le sont pas). 
 
-On obtient un assemblage où les trois régions du chloroplaste sont parfaitement distinctes et représentées chacune par un contig. Cependant, les statistiques de l'assemblage se sont considérablement dégradées. Le N50 est passé de 37kb à 16kb. Le nombre de contigs d'au moins 500 bases est passé de 35 à 55. 
+On obtient un assemblage où les trois régions du chloroplaste sont parfaitement distinctes et représentées chacune par un contig. Cependant, les statistiques de l'assemblage se sont considérablement dégradées. La N50 est passé de 37kb à 16kb. Le nombre de contigs d'au moins 500 bases est passé de 35 à 55. 
 
 On en déduit que, même lorsqu'on lui demande de ne pas scaffolder, Velvet exploite les informations sur les paires si elles sont présentes en utilisant Pebble pour fusionner certaines contigs. Ce premier round de Pebble donne globalement un meilleur assemblage mais il arrive que Pebble fasse des erreurs comme c'est le cas ici pour le chloroplaste. 
 
