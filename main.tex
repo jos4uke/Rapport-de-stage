@@ -688,13 +688,13 @@ Noeud 6544 & 335 & 66 \\
 \caption{Les contigs s'alignant sur le chloroplaste ou la mitochondrie de référence et possédant une couverture cohérente}
 \end{figure}
 
-On réaligne les données brutes sur les contigs. On voit que de nombreux contigs présent sur les graphes de ressemblances \ref{mv:1} et \ref{mv:2} possèdent bien la couverture attendue : environ 60X pour la mitochondrie et 560X pour le chloroplaste (le double pour sa région répétée). La liste de ces contigs est donnée dans les tables \ref{contig:1} et \ref{contig:2}. 
+On réaligne les données brutes sur les contigs. On voit que de nombreux contigs présents sur les graphes de ressemblances \ref{mv:1} et \ref{mv:2} possèdent bien la couverture attendue : environ 60X pour la mitochondrie et 560X pour le chloroplaste (le double pour sa région répétée). La liste de ces contigs est donnée dans les tables \ref{contig:1} et \ref{contig:2}. 
 
 Cependant, on trouve également de nombreux contigs qui ne passent pas l'étape de \hlrewrite{consistence}{consistance} interne. Il s'agit : 
 \begin{enumerate}
 	\item de contigs qui s'alignent sur le noyau de l'accession de référence d'après nucmer ou Blast mais sont extrêmement couverts par les reads \hlrewrite{bruts}{brutes} 
 
-D'après des recherches dans Blast, ces contigs correspondent à des unités répétées d'ADN ribosomique, d'où leur forte couverture.
+D'après des recherches avec Blast, ces contigs correspondent à des unités répétées d'ADN ribosomique, d'où leur forte couverture.
 
 \item de contigs qui s'alignent sur la mitochondrie ou le chloroplaste de référence d'après nucmer ou Blast mais dont la couverture n'est pas celle qui est attendue
 
