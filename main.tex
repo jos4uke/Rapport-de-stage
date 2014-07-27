@@ -855,7 +855,7 @@ Comme dans la section \ref{Velvet_norm}, on utilise Velvet pour assembler les do
 
 On obtient un assemblage où les trois régions du chloroplaste sont parfaitement distinctes et représentées chacune par un contig. Cependant, les statistiques de l'assemblage se sont considérablement dégradées. La N50 est passé de 37kb à 16kb. Le nombre de contigs d'au moins 500 bases est passé de 35 à 55. 
 
-On en déduit que, même lorsqu'on lui demande de ne pas scaffolder, Velvet exploite les informations sur les paires si elles sont présentes en utilisant Pebble pour fusionner certaines contigs. Ce premier round de Pebble donne globalement un meilleur assemblage mais il arrive que Pebble fasse des erreurs comme c'est le cas ici pour le chloroplaste. 
+On en déduit que, même lorsqu'on lui demande de ne pas scaffolder, Velvet exploite les informations sur les paires si elles sont présentes en utilisant Pebble pour fusionner certains contigs. Ce premier round de Pebble donne globalement \hlcomment{un meilleur assemblage}{la définition de meilleur assemblage n'est pas très bien définie, et la N50 n'est pas reconnu comme le critère infaillible loin de là\dots} mais il arrive que Pebble fasse des erreurs comme c'est le cas ici pour le chloroplaste. 
 
 Lorsqu'on assemble les données brutes avec MetaVelvet, le premier round de Pebble est également lancé sur chacun des sous-graphes de MetaVelvet. Pourtant, comme nous l'avons vu à la section \ref{MV_brut}\todo{référence erronée ou manquante}, les trois régions du chloroplaste sont distinctes. Donc, Pebble commet l'erreur de relier les trois régions du chloroplaste uniquement pour les données normalisées mais pas pour les données brutes. 
 
@@ -866,7 +866,7 @@ Pour distinguer les noeuds uniques des noeuds répétés, Velvet, comme Bambus2 
 Malheureusement, Velvet n'écrit pas les résultats de ses calculs dans un fichier. On a donc essayé de répliquer le comportement de Velvet en utilisant le script \textit{sga-astat} pour calculer nous-même la statistique de Myers pour chaque noeud. 
 
 Bien que cette approche soit discutable (on n'est pas sûr que \textit{sga-astat} et Velvet fasse exactement le même calcul), elle donne quand même des résultats intéressants. En effet, on trouve que la statistique de Myers du contig chloroplastique répétée se trouve entre celles des deux contigs chloroplastiques uniques. Or, les contigs répétés doivent forcément avoir une statistique de Myers inférieure à celle des contigs uniques. Si ce n'est pas le cas, on ne peut pas utiliser la statistique de Myers pour distinguer les contigs répétés des contigs uniques. 
-
+\todo[inline]{Je crois qu'il faut pas s'emballer, il me semble que les résultats sont obtenus à partir des données normalisées, et à priori je dirais que l'explication réside dans le fait qu'on abaisse artificiellement la couverture des régions répétées ce qui aurait pour conséquence d'induire le scaffolder en erreur en considérant que le contig n'est pas répété. La statistique de Myers me semble un bon atout pour détecter les répétitions. Si on se refere aux résultats de velvet obtenus à partir des données brutes - ce qui devraient correspondre aux résultats de metavelvet - tu le dis toi même les contigs restent distincts. J'aimerais bien voir les résultats de sga-astat sur les contigs de metavelvet\dots}
 
 
 
