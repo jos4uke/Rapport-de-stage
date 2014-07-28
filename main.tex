@@ -841,7 +841,7 @@ On réaligne les données brutes sur les scaffolds et on vérifie que les couver
 
 \subsubsection{Scaffolding avec Bambus2}
 
-On scaffolde les contigs obtenus avec MetaVelvet et décrits en détail à la section \ref{MV_brut}\todo{référence erronée ou manquante}.
+On scaffolde les contigs obtenus avec MetaVelvet et décrits en détail à la section \ref{MV_brut}.
 
 On obtient un assemblage final qui comporte 28 scaffolds, dont le plus long fait 85kb. La N50 est de 62kb. 
 
@@ -860,7 +860,7 @@ On obtient un assemblage où les trois régions du chloroplaste sont parfaitemen
 
 On en déduit que, même lorsqu'on lui demande de ne pas scaffolder, Velvet exploite les informations sur les paires si elles sont présentes en utilisant Pebble pour fusionner certains contigs. Ce premier round de Pebble donne globalement \hlcomment{un meilleur assemblage}{la définition de meilleur assemblage n'est pas très bien définie, et la N50 n'est pas reconnu comme le critère infaillible loin de là\dots} mais il arrive que Pebble fasse des erreurs comme c'est le cas ici pour le chloroplaste. 
 
-Lorsqu'on assemble les données brutes avec MetaVelvet, le premier round de Pebble est également lancé sur chacun des sous-graphes de MetaVelvet. Pourtant, comme nous l'avons vu à la section \ref{MV_brut}\todo{référence erronée ou manquante}, les trois régions du chloroplaste sont distinctes. Donc, Pebble commet l'erreur de relier les trois régions du chloroplaste uniquement pour les données normalisées mais pas pour les données brutes. 
+Lorsqu'on assemble les données brutes avec MetaVelvet, le premier round de Pebble est également lancé sur chacun des sous-graphes de MetaVelvet. Pourtant, comme nous l'avons vu à la section \ref{MV_brut}, les trois régions du chloroplaste sont distinctes. Donc, Pebble commet l'erreur de relier les trois régions du chloroplaste uniquement pour les données normalisées mais pas pour les données brutes. 
 
 Comme on l'a dit précédemment, Pebble connecte uniquement des noeuds \textbf{uniques}. Or, pour les données normalisées, il fusionne le contig qui correspond à la région répétée du chloroplaste avec les contigs correspondant aux deux régions uniques. Cela signifie que le contig de la région répétée est considéré par Velvet comme étant unique.
 
