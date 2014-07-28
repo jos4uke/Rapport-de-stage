@@ -240,7 +240,7 @@ Les génomes mitochondriaux et chloroplastiques des 10 accessions ont été séq
 
 Avant d'aligner ou d'assembler ces reads, il est nécessaire d'effectuer une analyse de qualité. Elle nous permettra de détecter d'éventuelles contaminations de la librairie ou des problèmes de séquençage (par exemple, une mauvaise qualité d'imagerie sur une flowcell va donner un sous-ensemble de reads de mauvaise qualité).
 
-On effectue l'analyse de qualité avec fastqc. Cet outil possède plusieurs modules qui vont chacune évaluer un indicateur : la qualité des bases (selon leur position sur le read), la longueur des reads etc. Chacune des ces mesures est comparée à ce qui est attendu pour une librairie aléatoire. Si l'observé et \hlrewrite{le prédit}{l'attendu} sont proches, le module est validé.
+On effectue l'analyse de qualité avec fastqc. Cet outil possède plusieurs modules qui vont chacune évaluer un indicateur : la qualité des bases (selon leur position sur le read), la longueur des reads etc. Chacune des ces mesures est comparée à ce qui est attendu pour une librairie aléatoire. Si l'observé et l'attendu sont proches, le module est validé.
 
 Si le module est rejeté, cela signifie que la librairie étudiée diffère sur ce point d'une librairie aléatoire. Cette différence peut provenir d'une contamination ou d'un biais de séquençage mais elle peut également résulter de la réalité biologique de nos données (qui ne sont, bien évidemment, pas aléatoires).
 
